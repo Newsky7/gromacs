@@ -37,6 +37,7 @@
 
 #include "gromacs/commandline/cmdlinemodule.h"
 #include "gromacs/commandline/cmdlinemodulemanager.h"
+#include <iostream>
 
 namespace
 {
@@ -51,6 +52,9 @@ void initSettingsNoNice(gmx::CommandLineModuleSettings* settings)
 
 int main(int argc, char* argv[])
 {
+
+    std::cout << " ## src/programs/mdrun_main.cpp: Running main()" << std::endl;
+
     return gmx::CommandLineModuleManager::runAsMainCMainWithSettings(
             argc, argv, &gmx::gmx_mdrun, &initSettingsNoNice);
 }

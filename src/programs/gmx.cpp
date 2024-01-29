@@ -45,9 +45,13 @@
 #include "gromacs/utility/exceptions.h"
 
 #include "legacymodules.h"
+#include <iostream>
 
 int main(int argc, char* argv[])
 {
+
+    std::cout << " ## src/programs/gmx.cpp: running main() " << std::endl; 
+
     gmx::CommandLineProgramContext& context = gmx::initForCommandLine(&argc, &argv);
     try
     {

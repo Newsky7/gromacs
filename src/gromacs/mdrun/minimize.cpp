@@ -112,6 +112,8 @@
 #include "legacysimulator.h"
 #include "shellfc.h"
 
+#include <iostream>
+
 using gmx::ArrayRef;
 using gmx::MdrunScheduleWorkload;
 using gmx::RVec;
@@ -141,9 +143,14 @@ static void print_em_start(FILE*                     fplog,
                            gmx_wallcycle*            wcycle,
                            const char*               name)
 {
+    std::cout << "## /src/gromacs/mdrun/minimize.cpp: start of print_em_start()" << std::endl;
+
     walltime_accounting_start_time(walltime_accounting);
     wallcycle_start(wcycle, WallCycleCounter::Run);
     print_start(fplog, cr, walltime_accounting, name);
+
+    std::cout << "## /src/gromacs/mdrun/minimize.cpp: end of print_em_start()" << std::endl;
+
 }
 
 //! Stop counting time for EM
@@ -157,10 +164,15 @@ static void em_time_end(gmx_walltime_accounting_t walltime_accounting, gmx_wallc
 //! Printing a log file and console header
 static void sp_header(FILE* out, const char* minimizer, real ftol, int nsteps)
 {
+
+    std::cout << "## /src/gromacs/mdrun/minimize.cpp: start of sp_header()" << std::endl;
+
     fprintf(out, "\n");
     fprintf(out, "%s:\n", minimizer);
     fprintf(out, "   Tolerance (Fmax)   = %12.5e\n", ftol);
     fprintf(out, "   Number of steps    = %12d\n", nsteps);
+
+    std::cout << "## /src/gromacs/mdrun/minimize.cpp: end of sp_header()" << std::endl;
 }
 
 //! Print warning message
@@ -224,6 +236,10 @@ static void print_converged(FILE*             fp,
                             const em_state_t* ems,
                             double            sqrtNumAtoms)
 {
+
+
+    std::cout << "## /src/gromacs/mdrun/minimize.cpp: start of print_converged()" << std::endl;
+
     char buf[STEPSTRSIZE];
 
     if (bDone)
@@ -253,6 +269,9 @@ static void print_converged(FILE*             fp,
     fprintf(fp, "Maximum force     = %14.7e on atom %d\n", ems->fmax, ems->a_fmax + 1);
     fprintf(fp, "Norm of force     = %14.7e\n", ems->fnorm / sqrtNumAtoms);
 #endif
+
+    std::cout << "## /src/gromacs/mdrun/minimize.cpp: end of print_converged()" << std::endl;
+
 }
 
 //! Compute the norm and max of the force array in parallel
@@ -379,6 +398,9 @@ static void init_em(FILE*                fplog,
                     gmx::Constraints*    constr,
                     gmx_shellfc_t**      shellfc)
 {
+
+    std::cout << "## /src/gromacs/mdrun/minimize.cpp: start of init_em()" << std::endl;
+
     real dvdl_constr;
 
     if (fplog)
@@ -508,6 +530,11 @@ static void init_em(FILE*                fplog,
     }
 
     calc_shifts(ems->s.box, fr->shift_vec);
+
+
+
+    std::cout << "## /src/gromacs/mdrun/minimize.cpp: end of init_em()" << std::endl;
+
 }
 
 //! Finalize the minimization
@@ -633,6 +660,9 @@ static bool do_em_step(const t_commrec*                          cr,
                        int64_t                                   count)
 
 {
+
+    std::cout << " ## minimize.cpp: do_em_step()" << std::endl;
+
     t_state *    s1, *s2;
     int          start, end;
     real         dvdl_constr;
@@ -642,6 +672,15 @@ static bool do_em_step(const t_commrec*                          cr,
 
     s1 = &ems1->s;
     s2 = &ems2->s;
+
+
+    // Here the state is copied?
+    // s1 is the previous state and s2 is new state that is to be calculated?
+
+    std::cout << " ## Number of atoms in s1: " << s1->natoms << std::endl;
+    std::cout << " ## Number of temperature coupling groups in s1: " << s1->ngtc << std::endl;
+
+
 
     if (haveDDAtomOrdering(*cr) && s1->ddp_count != cr->dd->ddp_count)
     {
@@ -659,6 +698,18 @@ static bool do_em_step(const t_commrec*                          cr,
     {
         s2->cg_gl.resize(s1->cg_gl.size());
     }
+
+    /*
+    for(int i = 0; i<DIM; i++){
+        for(int j = 0; j< DIM; j++){
+            std::cout << " BOX" << std::endl;
+            std::cout << s1->box[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+    */
+
 
     copy_mat(s1->box, s2->box);
     /* Copy free energy state */
@@ -1258,6 +1309,9 @@ namespace gmx
 
 void LegacySimulator::do_cg()
 {
+
+    std::cout << "## /src/gromacs/mdrun/minimize.cpp: start of LegacySimulator::do_cg()" << std::endl;
+
     const char* CG = "Polak-Ribiere Conjugate Gradients";
 
     gmx_global_stat_t gstat;
@@ -1972,11 +2026,19 @@ void LegacySimulator::do_cg()
 
     /* To print the actual number of steps we needed somewhere */
     walltime_accounting_set_nsteps_done(walltime_accounting, step);
+
+
+    std::cout << "## /src/gromacs/mdrun/minimize.cpp: end of LegacySimulator::do_cg()" << std::endl;
+
 }
 
 
 void LegacySimulator::do_lbfgs()
 {
+
+
+    std::cout << "## /src/gromacs/mdrun/minimize.cpp: start of LegacySimulator::do_lbfgs()" << std::endl;
+
     static const char* LBFGS = "Low-Memory BFGS Minimizer";
     em_state_t         ems;
     gmx_global_stat_t  gstat;
@@ -2795,10 +2857,18 @@ void LegacySimulator::do_lbfgs()
 
     /* To print the actual number of steps we needed somewhere */
     walltime_accounting_set_nsteps_done(walltime_accounting, step);
+
+
+    std::cout << "## /src/gromacs/mdrun/minimize.cpp: end of LegacySimulator::do_lbfgs()" << std::endl;
+
 }
 
 void LegacySimulator::do_steep()
 {
+
+
+    std::cout << "## /src/gromacs/mdrun/minimize.cpp: start of LegacySimulator::do_steep()" << std::endl;
+
     const char*       SD = "Steepest Descents";
     gmx_global_stat_t gstat;
     real              stepsize;
@@ -2827,6 +2897,7 @@ void LegacySimulator::do_steep()
     ObservablesReducer observablesReducer = observablesReducerBuilder->build();
 
     /* Init em and store the local state in s_try */
+    std::cout << "## Calling init_em()" << std::endl; 
     init_em(fplog,
             mdlog,
             SD,
@@ -2845,6 +2916,9 @@ void LegacySimulator::do_steep()
             vsite,
             constr,
             nullptr);
+
+    std::cout << "## init_em() returned" << std::endl;
+
     const bool        simulationsShareState = false;
     gmx_mdoutf*       outf                  = init_mdoutf(fplog,
                                    nfile,
@@ -2920,23 +2994,32 @@ void LegacySimulator::do_steep()
      * bAbort will be TRUE when nsteps steps have been performed or when
      * the stepsize becomes smaller than is reasonable for machine precision
      */
+
+
+    std::cout << " ## Entering minimization loop" << std::endl;
+
     count  = 0;
     bDone  = FALSE;
     bAbort = FALSE;
     while (!bDone && !bAbort)
     {
+
+        std::cout << " ## count is: " << count << std::endl;
+
         bAbort = (nsteps >= 0) && (count == nsteps);
 
         /* set new coordinates, except for first step */
         bool validStep = true;
         if (count > 0)
-        {
+        {   
+            std::cout << " ## Setting new coordinates" << std::endl;
             validStep = do_em_step(
                     cr, inputrec, mdatoms, s_min, stepsize, s_min->f.view().forceWithPadding(), s_try, constr, count);
         }
 
         if (validStep)
         {
+            std::cout << " ## Evaluating energy" << std::endl;
             energyEvaluator.run(s_try, mu_tot, vir, pres, count, count == 0, count);
         }
         else
@@ -3122,10 +3205,17 @@ void LegacySimulator::do_steep()
     finish_em(cr, outf, walltime_accounting, wcycle);
 
     walltime_accounting_set_nsteps_done(walltime_accounting, count);
+
+
+    std::cout << "## /src/gromacs/mdrun/minimize.cpp: end of LegacySimulator::do_steep()" << std::endl;
+
 }
 
 void LegacySimulator::do_nm()
 {
+
+    std::cout << "## /src/gromacs/mdrun/minimize.cpp: start of LegacySimulator::do_nm()" << std::endl;
+
     const char*         NM = "Normal Mode Analysis";
     int                 nnodes;
     gmx_global_stat_t   gstat;
@@ -3480,6 +3570,8 @@ void LegacySimulator::do_nm()
     finish_em(cr, outf, walltime_accounting, wcycle);
 
     walltime_accounting_set_nsteps_done(walltime_accounting, numSteps);
+
+    std::cout << "## /src/gromacs/mdrun/minimize.cpp: end of LegacySimulator::do_nm()" << std::endl;
 }
 
 } // namespace gmx

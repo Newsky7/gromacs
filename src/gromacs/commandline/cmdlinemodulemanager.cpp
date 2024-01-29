@@ -67,6 +67,8 @@
 #include "cmdlinehelpmodule.h"
 #include "cmdlinemodulemanager_impl.h"
 
+#include <iostream>
+
 namespace gmx
 {
 
@@ -497,6 +499,9 @@ void CommandLineModuleManager::addHelpTopic(HelpTopicPointer topic)
 
 int CommandLineModuleManager::run(int argc, char* argv[])
 {
+
+    std::cout << " ## src/gromacs/commandline/cmdlinemodulemanager.cpp: running CommandLineModuleManager::run()" << std::endl;
+
     ICommandLineModule*            module;
     const bool                     bMain  = (gmx_node_rank() == 0);
     bool                           bQuiet = impl_->bQuiet_ || !bMain;
@@ -565,8 +570,11 @@ int CommandLineModuleManager::run(int argc, char* argv[])
 
     int rc = 0;
     if (!(module == impl_->helpModule_ && !bMain))
-    {
+    {   
+        std::cout << " ## Running module->run" << std::endl;
+        std::cout << " ## NAME OF THE MODULE IS: " << module->name() << std::endl;
         rc = module->run(argc, argv);
+        std::cout << " ## module-> run finished" << std::endl;
     }
     if (!bQuiet)
     {

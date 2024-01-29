@@ -180,6 +180,8 @@
 #include "replicaexchange.h"
 #include "simulatorbuilder.h"
 
+#include <iostream>
+
 namespace gmx
 {
 
@@ -619,6 +621,9 @@ static bool gpuAccelerationOfNonbondedIsUseful(const MDLogger&   mdlog,
                                                const bool        issueWarning,
                                                const bool        doRerun)
 {
+
+    std::cout << " ## src/gromacs/mdrun/runner.cpp: gpuAccelerationOfNonbondedIsUseful" << std::endl;
+
     bool        gpuIsUseful = true;
     std::string warning;
 
@@ -683,6 +688,9 @@ static gmx::LoggerOwner buildLogger(FILE* fplog, const bool isSimulationMainRank
 //! Make a TaskTarget from an mdrun argument string.
 static TaskTarget findTaskTarget(const char* optionString)
 {
+
+    std::cout << " ## src/gromacs/mdrun/runner.cpp: findTaskTarget()" << std::endl;
+
     TaskTarget returnValue = TaskTarget::Auto;
 
     if (strncmp(optionString, "auto", 3) == 0)
@@ -717,6 +725,10 @@ static void finish_run(FILE*                     fplog,
                        const gmx_pme_t*          pme,
                        gmx_bool                  bWriteStat)
 {
+
+
+    std::cout << " ## src/gromacs/mdrun/runner.cpp: finish_run()" << std::endl;
+
     double delta_t = 0;
     double nbfs = 0, mflop = 0;
     double elapsed_time, elapsed_time_over_all_ranks, elapsed_time_over_all_threads,

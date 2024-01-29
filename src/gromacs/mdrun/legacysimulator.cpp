@@ -45,12 +45,16 @@
 #include "gromacs/mdtypes/inputrec.h"
 #include "gromacs/mdtypes/md_enums.h"
 #include "gromacs/utility/exceptions.h"
+#include <iostream>
 
 namespace gmx
 {
 //! \brief Run the correct integrator function.
 void LegacySimulator::run()
 {
+
+    std::cout << " ## src/gromacs/mdrun/legacysimulator.cpp:  Running LegacySimulator::run()" << std::endl;
+
     switch (inputrec->eI)
     {
         case IntegrationAlgorithm::MD:
@@ -98,6 +102,8 @@ void LegacySimulator::run()
             GMX_THROW(NotImplementedError("SD2 integrator has been removed"));
         default: GMX_THROW(APIError("Non existing integrator selected"));
     }
+
+    std::cout << " ## LegacySimulator::run() finished" << std::endl;
 }
 
 } // namespace gmx

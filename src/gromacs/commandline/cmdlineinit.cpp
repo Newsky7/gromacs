@@ -60,6 +60,9 @@
 #include "gromacs/utility/programcontext.h"
 #include "gromacs/utility/smalloc.h"
 
+
+#include <iostream>
+
 namespace gmx
 {
 
@@ -132,6 +135,9 @@ void broadcastArguments(int* argc, char*** argv)
 
 CommandLineProgramContext& initForCommandLine(int* argc, char*** argv)
 {
+
+    std::cout << " ## src/gromacs/commandline/cmdlinemodulemanager.cpp: initForCommandLine()" << std::endl;
+
     gmx::init(argc, argv);
     GMX_RELEASE_ASSERT(!g_commandLineContext, "initForCommandLine() calls cannot be nested");
     // TODO: Consider whether the argument broadcast would better be done

@@ -154,10 +154,15 @@
 #include "replicaexchange.h"
 #include "shellfc.h"
 
+#include <iostream>
+
 using gmx::SimulationSignaller;
 
 void gmx::LegacySimulator::do_md()
 {
+
+    std::cout << " ## src/gromacs/mdrun/md.cpp: Running LegacySimulator::do_md()" << std::endl;
+ 
     // TODO Historically, the EM and MD "integrators" used different
     // names for the t_inputrec *parameter, but these must have the
     // same name, now that it's a member of a struct. We use this ir
