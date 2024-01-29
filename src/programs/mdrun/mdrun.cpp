@@ -69,11 +69,17 @@
 
 #include "mdrun_main.h"
 
+#include <iostream>
+
 namespace gmx
 {
 
 int gmx_mdrun(int argc, char* argv[])
 {
+
+
+    std::cout << " ## src/programs/mdrun/mdrun.cpp: gmx_mdrun()" << std::endl;
+
     // Set up the communicator, where possible (see docs for
     // SimulationContext).
     MPI_Comm                 communicator = GMX_LIB_MPI ? MPI_COMM_WORLD : MPI_COMM_NULL;
@@ -84,6 +90,9 @@ int gmx_mdrun(int argc, char* argv[])
 
 int gmx_mdrun(MPI_Comm communicator, const gmx_hw_info_t& hwinfo, int argc, char* argv[])
 {
+
+    std::cout << " ## src/programs/mdrun/mdrun.cpp: gmx_mdrun_2()" << std::endl;
+
     auto mdModules = std::make_unique<MDModules>();
 
     std::vector<const char*> desc = {

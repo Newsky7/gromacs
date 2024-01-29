@@ -70,6 +70,8 @@
 #include "gromacs/tools/trjconv.h"
 #include "gromacs/tools/tune_pme.h"
 
+#include <iostream>
+
 namespace
 {
 
@@ -169,6 +171,9 @@ void registerObsoleteTool(gmx::CommandLineModuleManager* manager, const char* na
 
 void registerLegacyModules(gmx::CommandLineModuleManager* manager)
 {
+
+    std::cout << " ## --| src/programs/legacymodules.cpp: registerLegacyModules()" << std::endl;
+
     registerModule(manager, &gmx_check, "check", "Check and compare files");
     gmx::ICommandLineOptionsModule::registerModuleFactory(
             manager, gmx::DumpInfo::name, gmx::DumpInfo::shortDescription, &gmx::DumpInfo::create);
@@ -543,4 +548,7 @@ void registerLegacyModules(gmx::CommandLineModuleManager* manager)
         group.addModuleWithDescription("mdrun",
                                        "Find a potential energy minimum and calculate the Hessian");
     }
+
+    std::cout << std::endl;
+
 }

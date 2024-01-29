@@ -47,6 +47,9 @@
 #include "gromacs/utility/basedefinitions.h"
 #include "gromacs/utility/fatalerror.h"
 #include "gromacs/utility/gmxassert.h"
+
+#include <iostream>
+
 #if GMX_LIB_MPI
 #    include "gromacs/utility/gmxmpi.h"
 #endif
@@ -64,6 +67,9 @@ int g_initializationCounter = 0;
 
 void init(int* argc, char*** argv) // NOLINT(readability-non-const-parameter)
 {
+
+    std::cout << " ## ----| src/gromacs/utility/init.cpp: init()" << std::endl;
+
 #if GMX_LIB_MPI
     int isInitialized = 0, isFinalized = 0;
     MPI_Finalized(&isFinalized);

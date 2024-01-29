@@ -126,7 +126,11 @@ public:
             settingsFunction_(settings);
         }
     }
-    int  run(int argc, char* argv[]) override { return mainFunction_(argc, argv); }
+    int  run(int argc, char* argv[]) override { 
+        std::cout << " ## src/gromacs/commandline/cmdlinemodulemanager.cpp: run()" << std::endl;
+        return mainFunction_(argc, argv); 
+    }
+
     void writeHelp(const CommandLineHelpContext& context) const override
     {
         writeCommandLineHelpCMain(context, name_, mainFunction_);
@@ -319,12 +323,17 @@ CommandLineModuleManager::Impl::Impl(const char* binaryName, CommandLineProgramC
     singleModule_(nullptr),
     bQuiet_(false)
 {
+    std::cout << " ## --| src/gromacs/commandline/cmdlinemodulemanager.cpp: CommandLineModuleManager::Impl Constructor" << std::endl;
+
     GMX_RELEASE_ASSERT(binaryName_.find('-') == std::string::npos,
                        "Help export does not currently work with binary names with dashes");
 }
 
 void CommandLineModuleManager::Impl::addModule(CommandLineModulePointer module)
 {
+
+    // std::cout << " ## ------| src/gromacs/commandline/cmdlinemodulemager.cpp: CommandLineModuleManager::Impl::addModule()" << std::endl;
+
     GMX_ASSERT(modules_.find(module->name()) == modules_.end(),
                "Attempted to register a duplicate module name");
     ensureHelpModuleExists();
@@ -335,6 +344,9 @@ void CommandLineModuleManager::Impl::addModule(CommandLineModulePointer module)
 
 void CommandLineModuleManager::Impl::ensureHelpModuleExists()
 {
+
+    // std::cout << " ## ----| src/gromacs/commandline/cmdlinemodulemanager.cpp: CommandLineModuleManager::Impl::ensureHelpModuleExists()" << std::endl;
+
     if (helpModule_ == nullptr)
     {
         helpModule_ = new CommandLineHelpModule(programContext_, binaryName_, modules_, moduleGroups_);
@@ -440,6 +452,10 @@ CommandLineModuleManager::CommandLineModuleManager(const char*                bi
                                                    CommandLineProgramContext* programContext) :
     impl_(new Impl(binaryName, programContext))
 {
+
+    std::cout << " ## ----| src/gromacs/commandline/cmdlinemodulemanager.cpp: CommandLineModuleManager Constructor" << std::endl;
+    std::cout << std::endl;
+
 }
 
 CommandLineModuleManager::~CommandLineModuleManager() {}
@@ -493,14 +509,21 @@ CommandLineModuleGroup CommandLineModuleManager::addModuleGroup(const char* titl
 
 void CommandLineModuleManager::addHelpTopic(HelpTopicPointer topic)
 {
+
+    std::cout << " ## --| src/gromacs/commandline/cmdlinemodulemanager.cpp: CommandLineModulemanager::addHelpTopic()" << std::endl;
+
     impl_->ensureHelpModuleExists();
     impl_->helpModule_->addTopic(std::move(topic), true);
+
+
+    std::cout << std::endl;
+
 }
 
 int CommandLineModuleManager::run(int argc, char* argv[])
 {
 
-    std::cout << " ## src/gromacs/commandline/cmdlinemodulemanager.cpp: running CommandLineModuleManager::run()" << std::endl;
+    std::cout << " ## --| src/gromacs/commandline/cmdlinemodulemanager.cpp: CommandLineModuleManager::run()" << std::endl;
 
     ICommandLineModule*            module;
     const bool                     bMain  = (gmx_node_rank() == 0);
@@ -580,6 +603,9 @@ int CommandLineModuleManager::run(int argc, char* argv[])
     {
         impl_->printThanks(stderr);
     }
+
+    std::cout << std::endl;
+
     return rc;
 }
 

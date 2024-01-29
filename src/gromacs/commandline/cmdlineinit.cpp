@@ -102,6 +102,8 @@ void broadcastWorld(int size, void* buffer)
  */
 void broadcastArguments(int* argc, char*** argv)
 {
+    std::cout << " ## ----| src/gromacs/commandline/cmdlineinit.cpp: broadcastArguments()" << std::endl;
+
     if (gmx_node_num() <= 1)
     {
         return;
@@ -136,7 +138,7 @@ void broadcastArguments(int* argc, char*** argv)
 CommandLineProgramContext& initForCommandLine(int* argc, char*** argv)
 {
 
-    std::cout << " ## src/gromacs/commandline/cmdlinemodulemanager.cpp: initForCommandLine()" << std::endl;
+    std::cout << " ## --| src/gromacs/commandline/cmdlinemodulemanager.cpp: initForCommandLine()" << std::endl;
 
     gmx::init(argc, argv);
     GMX_RELEASE_ASSERT(!g_commandLineContext, "initForCommandLine() calls cannot be nested");
@@ -156,6 +158,10 @@ CommandLineProgramContext& initForCommandLine(int* argc, char*** argv)
         printFatalErrorMessage(stderr, ex);
         std::exit(processExceptionAtExit(ex));
     }
+
+
+    std::cout << std::endl;
+
     return *g_commandLineContext;
 }
 

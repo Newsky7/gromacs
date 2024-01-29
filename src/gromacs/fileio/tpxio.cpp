@@ -79,6 +79,8 @@
 #include "gromacs/utility/snprintf.h"
 #include "gromacs/utility/txtdump.h"
 
+#include <iostream>
+
 #define TPX_TAG_RELEASE "release"
 
 /*! \brief Tag string for the file format written to run input files
@@ -2725,6 +2727,9 @@ static void do_tpxheader(gmx::FileIOXdrSerializer*    serializer,
                          t_fileio*                    fio,
                          bool                         TopOnlyOK)
 {
+
+    std::cout << " ## src/gromacs/fileio/tpxio.cpp: do_tpxheader()" << std::endl;
+
     int  precision;
     int  idum = 0;
     real rdum = 0;
@@ -3345,6 +3350,10 @@ static PartialDeserializedTprFile readTpxBody(TpxFileHeader*    tpx,
 
 TpxFileHeader readTpxHeader(const std::filesystem::path& fileName, bool canReadTopologyOnly)
 {
+
+
+    std::cout << " ## src/gromacs/fileio/tpxio.cpp: readTpxHeader()" << std::endl;
+
     t_fileio* fio;
 
     fio = open_tpx(fileName, "r");
@@ -3361,6 +3370,11 @@ void write_tpx_state(const std::filesystem::path& fn,
                      const t_state*               state,
                      const gmx_mtop_t&            mtop)
 {
+
+
+    std::cout << " ## src/gromacs/fileio/tpxio.cpp: write_tpx_state()" << std::endl;
+
+
     /* To write a state, we first need to write the state information to a buffer before
      * we append the raw bytes to the file. For this, the header information needs to be
      * populated before we write the main body because it has some information that is
@@ -3424,6 +3438,10 @@ PbcType completeTprDeserialization(PartialDeserializedTprFile* partialDeserializ
 PartialDeserializedTprFile
 read_tpx_state(const std::filesystem::path& fn, t_inputrec* ir, t_state* state, gmx_mtop_t* mtop)
 {
+
+    std::cout << " ## src/gromacs/fileio/tpxio.cpp: read_tpx_state()" << std::endl;
+
+
     t_fileio* fio;
     fio = open_tpx(fn, "r");
     gmx::FileIOXdrSerializer   serializer(fio);

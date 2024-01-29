@@ -868,6 +868,10 @@ static void finish_run(FILE*                     fplog,
 
 int Mdrunner::mdrunner()
 {
+
+    std::cout << " ## src/gromacs/mdrun/runner.cpp: Mdrunner::mdrunner()" << std::endl;
+
+
     std::unique_ptr<t_forcerec> fr;
     real                        ewaldcoeff_q     = 0;
     real                        ewaldcoeff_lj    = 0;

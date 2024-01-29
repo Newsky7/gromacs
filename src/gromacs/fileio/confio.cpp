@@ -58,6 +58,8 @@
 #include "gromacs/utility/gmxassert.h"
 #include "gromacs/utility/smalloc.h"
 
+#include <iostream>
+
 void write_sto_conf_indexed(const std::filesystem::path& outfile,
                             const char*                  title,
                             const t_atoms*               atoms,
@@ -449,6 +451,11 @@ void readConfAndTopology(const std::filesystem::path& infile,
                          rvec**                       v,
                          matrix                       box)
 {
+
+
+    std::cout << " ## src/gromacs/fileio/confio.cpp: readConfAndTopology()" << std::endl;
+
+
     GMX_RELEASE_ASSERT(mtop != nullptr, "readConfAndTopology requires mtop!=NULL");
 
     if (pbcType != nullptr)
@@ -499,6 +506,9 @@ gmx_bool read_tps_conf(const std::filesystem::path& infile,
                        matrix                       box,
                        gmx_bool                     requireMasses)
 {
+
+    std::cout << " ## src/gromac/fileio/tpxio.cpp: read_tps_conf()" << std::endl;
+
     bool       haveTopology;
     gmx_mtop_t mtop;
 

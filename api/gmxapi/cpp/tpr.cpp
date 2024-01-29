@@ -61,6 +61,8 @@
 #include "gmxapi/gmxapi.h"
 #include "gmxapi/gmxapicompat.h"
 
+#include <iostream>
+
 using gmxapi::GmxapiType;
 
 namespace gmxapicompat
@@ -74,7 +76,9 @@ public:
         mtop_{ std::make_unique<gmx_mtop_t>() },
         state_{ std::make_unique<t_state>() }
     {
+        std::cout << " ## Class <TprContents> constructor" << std::endl;
         read_tpx_state(infile.c_str(), irInstance_.get(), state_.get(), mtop_.get());
+        
     }
     ~TprContents()                             = default;
     TprContents(TprContents&& source) noexcept = default;

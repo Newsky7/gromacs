@@ -58,6 +58,8 @@
 #include "gromacs/commandline/cmdlinemodulemanager.h"
 #include "gromacs/trajectoryanalysis/cmdlinerunner.h"
 
+#include <iostream>
+
 namespace gmx
 {
 
@@ -89,6 +91,9 @@ void registerModule(CommandLineModuleManager* manager, CommandLineModuleGroup gr
 //! \cond libapi
 void registerTrajectoryAnalysisModules(CommandLineModuleManager* manager)
 {
+
+    std::cout << " ## --| src/gromacs/trajectoryanalysis/modules.cpp: registerTrajectoryAnalysisModules()" << std::endl;
+
     using namespace gmx::analysismodules;
     CommandLineModuleGroup group = manager->addModuleGroup("Trajectory analysis");
     registerModule<AngleInfo>(manager, group);
@@ -103,6 +108,8 @@ void registerTrajectoryAnalysisModules(CommandLineModuleManager* manager)
     registerModule<SasaInfo>(manager, group);
     registerModule<SelectInfo>(manager, group);
     registerModule<TrajectoryInfo>(manager, group);
+
+    std::cout << std::endl;
 }
 //! \endcond
 

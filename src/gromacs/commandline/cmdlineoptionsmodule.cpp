@@ -56,6 +56,8 @@
 #include "gromacs/utility/gmxassert.h"
 #include "gromacs/utility/stringutil.h"
 
+#include <iostream>
+
 namespace gmx
 {
 
@@ -72,6 +74,7 @@ public:
     explicit CommandLineOptionsModuleSettings(OptionsBehaviorCollection* behaviors) :
         behaviors_(*behaviors)
     {
+        std::cout << " ## ----| src/gromacs/commandline/cmdlineoptionsmodule.cpp: CommandLineOptionsModuleSettings constructor" << std::endl;
     }
 
     const std::string& helpText() const { return helpText_; }
@@ -111,6 +114,7 @@ public:
     CommandLineOptionsModule(const char* name, const char* description, FactoryMethod factory) :
         name_(name), description_(description), factory_(std::move(factory))
     {
+        std::cout << " ## ----| src/gromacs/commandline/cmdlineoptionsmodule.cpp: CommandLineOptionsModule constructor" << std::endl;
     }
     CommandLineOptionsModule(const char* name, const char* description, ICommandLineOptionsModulePointer module) :
         name_(name), description_(description), module_(std::move(module))

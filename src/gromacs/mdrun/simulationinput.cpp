@@ -42,6 +42,8 @@
 #include "gromacs/mdtypes/observableshistory.h"
 #include "gromacs/mdtypes/state.h"
 
+#include <iostream>
+
 namespace gmx
 {
 
@@ -51,6 +53,9 @@ void applyGlobalSimulationState(const SimulationInput&      simulationInput,
                                 t_inputrec*                 inputRecord,
                                 gmx_mtop_t*                 molecularTopology)
 {
+
+    std::cout << " ## src/gromacs/mdrun/simulationinput.cpp: applyGlobalSimulationState()" << std::endl;
+
     *partialDeserializedTpr = read_tpx_state(
             simulationInput.tprFilename_.c_str(), inputRecord, globalState, molecularTopology);
 }

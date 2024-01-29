@@ -50,7 +50,7 @@
 int main(int argc, char* argv[])
 {
 
-    std::cout << " ## src/programs/gmx.cpp: running main() " << std::endl; 
+    std::cout << " ## | src/programs/gmx.cpp: main() " << std::endl; 
 
     gmx::CommandLineProgramContext& context = gmx::initForCommandLine(&argc, &argv);
     try

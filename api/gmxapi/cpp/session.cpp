@@ -53,6 +53,8 @@
 #include "session_impl.h"
 #include "sessionresources.h"
 
+#include <iostream>
+
 namespace gmxapi
 {
 
@@ -103,6 +105,9 @@ Status SessionImpl::close()
 
 Status SessionImpl::run() noexcept
 {
+
+    std::cout << " ## api/gmxapi/cpp/session.cpp: SessionImpl::run()" << std::endl;
+
     // Status is failure until proven otherwise.
     auto successful = Status(false);
     GMX_ASSERT(runner_, "SessionImpl invariant implies valid Mdrunner handle.");
