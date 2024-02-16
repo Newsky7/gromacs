@@ -668,6 +668,8 @@ static bool do_em_step(const t_commrec*                          cr,
     real         dvdl_constr;
     int nthreads gmx_unused;
 
+    std::cout << "# int nthreads is: " << nthreads << std::endl;
+
     bool validStep = true;
 
     s1 = &ems1->s;
@@ -720,13 +722,49 @@ static bool do_em_step(const t_commrec*                          cr,
     end   = md->homenr;
 
     nthreads = gmx_omp_nthreads_get(ModuleMultiThread::Update);
+
+    std::cout << " # Number of threads is: " << nthreads << std::endl;
+
 #pragma omp parallel num_threads(nthreads)
     {
         const rvec* x1 = s1->x.rvec_array();
+
+
+        for(int i = 0; i<DIM; i++){
+            std::cout << *x1[i] << " ";
+        }
+        std::cout << std::endl;
+
+        
+        size_t size1 = sizeof(x1);
+        size_t size2 = sizeof(*x1);
+
+        std::cout<< "size of x1 is : " << size1 << std::endl;
+        std::cout << "size of *x1 is : " << size2 << std::endl;
+
+        size_t size3 = sizeof(x1[0]);
+        size_t size4 = sizeof(*x1[0]);
+
+        std::cout<< "size of x1[0] is : " << size3 << std::endl;
+        std::cout << "size of *x1[0] is : " << size4 << std::endl;
+
+        std::cout << " size of float is : " << sizeof(float) << std::endl;
+
+        //int sizev = sizeof(*x1)/sizeof(float);
+
+        //std::cout << "# size of rvec x1 should be: 3 and it is :" << sizev << std::endl; 
+
         rvec*       x2 = s2->x.rvec_array();
+
+        for(int i = 0; i<DIM; i++){
+            std::cout << *x2[i] << " ";
+        }
+        std::cout << std::endl;
+
+
         const rvec* f  = as_rvec_array(force.unpaddedArrayRef().data());
 
-        int gf = 0;
+        int gf = 0;           
 #pragma omp for schedule(static) nowait
         for (int i = start; i < end; i++)
         {
@@ -820,6 +858,8 @@ static bool do_em_step(const t_commrec*                          cr,
                       enumValueToString(ir->eI));
         }
     }
+
+    std::cout<< "# do_em_step() returns" << std::endl;
 
     return validStep;
 }

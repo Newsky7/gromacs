@@ -102,6 +102,7 @@ index ssize(const T& t)
 /* GCC, clang, and any pretending to be or based on them */
 #        define gmx_unused __attribute__((unused))
 #    elif defined(__PGI)
+
 /* Portland group compilers */
 #        define gmx_unused __attribute__((unused))
 #    elif defined _MSC_VER
