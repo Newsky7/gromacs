@@ -55,6 +55,7 @@ void LegacySimulator::run()
 
     std::cout << " ## src/gromacs/mdrun/legacysimulator.cpp:  Running LegacySimulator::run()" << std::endl;
 
+
     switch (inputrec->eI)
     {
         case IntegrationAlgorithm::MD:
@@ -86,7 +87,10 @@ void LegacySimulator::run()
                 do_mimic();
             }
             break;
-        case IntegrationAlgorithm::Steep: do_steep(); break;
+        case IntegrationAlgorithm::Steep: 
+            std::cout << " <<<< inputrec->eI is IntegrationAlgorithm::Steep:" << std::endl;
+            do_steep(); 
+            break;
         case IntegrationAlgorithm::CG: do_cg(); break;
         case IntegrationAlgorithm::NM: do_nm(); break;
         case IntegrationAlgorithm::LBFGS: do_lbfgs(); break;

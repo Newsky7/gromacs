@@ -407,13 +407,18 @@ static void init_em(FILE*                fplog,
     {
         fprintf(fplog, "Initiating %s\n", title);
     }
+    
+    std::cout << "Rank in default communicator is: " << cr->rankInDefaultCommunicator << std::endl;
+    std::cout << "Size of default communicator is: " << cr->sizeOfDefaultCommunicator << std::endl;
 
     if (MAIN(cr))
     {
         state_global->ngtc = 0;
     }
     int*                fep_state = MAIN(cr) ? &state_global->fep_state : nullptr;
+
     gmx::ArrayRef<real> lambda    = MAIN(cr) ? state_global->lambda : gmx::ArrayRef<real>();
+
     initialize_lambdas(
             fplog, ir->efep, ir->bSimTemp, *ir->fepvals, ir->simtempvals->temperatures, nullptr, MAIN(cr), fep_state, lambda);
 
@@ -794,6 +799,8 @@ static bool do_em_step(const t_commrec*                          cr,
             /* Copy the CG p vector */
             const rvec* p1 = s1->cg_p.rvec_array();
             rvec*       p2 = s2->cg_p.rvec_array();
+
+
 #pragma omp for schedule(static) nowait
             for (int i = start; i < end; i++)
             {
@@ -805,6 +812,7 @@ static bool do_em_step(const t_commrec*                          cr,
         if (haveDDAtomOrdering(*cr))
         {
             /* OpenMP does not supported unsigned loop variables */
+            
 #pragma omp for schedule(static) nowait
             for (gmx::index i = 0; i < gmx::ssize(s2->cg_gl); i++)
             {
@@ -2076,7 +2084,7 @@ void LegacySimulator::do_cg()
 void LegacySimulator::do_lbfgs()
 {
 
-
+    
     std::cout << "## /src/gromacs/mdrun/minimize.cpp: start of LegacySimulator::do_lbfgs()" << std::endl;
 
     static const char* LBFGS = "Low-Memory BFGS Minimizer";
@@ -2934,6 +2942,71 @@ void LegacySimulator::do_steep()
     em_state_t* s_min = &s0;
     em_state_t* s_try = &s1;
 
+    // HERE STARTS MY OWN MESS
+    std::cout << "\n # em_state_t s_min:" << std::endl;
+    std::cout << "epot: "<< s_min->epot << ", fnorm: " << s_min->fnorm << " , fmax: " << s_min->fmax << " , a_fmax: " << s_min->a_fmax <<"\n" <<std::endl;
+
+    std::cout << "\n # em_state_t s_try:" << std::endl;
+    std::cout << "epot: "<< s_try->epot << ", fnorm: " << s_try->fnorm << " , fmax: " << s_try->fmax << " , a_fmax: " << s_try->a_fmax << "\n" << std::endl;
+
+    // These are temp
+    ForceBuffersView& fbv_min = s_min->f.view();
+    ForceBuffersView& fbv_try = s_try->f.view();
+    
+    ArrayRef<RVec> fbv_min_array = fbv_min.force();
+
+    ArrayRef<RVec> fbv_try_array = fbv_try.force();
+
+    // Alternatively as const:
+
+    const ForceBuffersView& fbv_min_c = s_min->f.view();
+    const ForceBuffersView& fbv_try_c = s_try->f.view();
+
+    ArrayRef<const RVec> fbv_min_array_c = fbv_min_c.force();
+
+    ArrayRef<const RVec> fbv_try_array_c = fbv_try_c.force();
+
+    
+    std::cout << "# ARRAYREF<RVEC> KOKO: " << fbv_min_array.size() << std::endl;
+
+    for(auto i: fbv_min_array){
+        std::cout << i << std::endl;
+    }
+    
+    // How to create BasicVector??
+    BasicVector<int> bv = BasicVector<int>(3,5,6);
+
+    std::cout << "# ELEMENTS OF SELFMADE BASIC VECTOR: " << bv[0] << bv[1] << bv[2]<< std::endl;
+
+    BasicVector<int> bv2 = BasicVector<int>(1,2,3);
+
+    BasicVector<int> bv3 = bv + bv2;
+
+    std::cout << "# ELEMENTS OF SELFMADE BASIC VECTOR AFTER ADDITION: " << bv3[0] << bv3[1] << bv3[2]<< std::endl;
+
+
+    // scaling
+    BasicVector<int> bv4 = bv*3;
+
+
+    std::cout << "# ELEMENTS OF SELFMADE BASIC VECTOR AFTER SCALING: " << bv4[0] << bv4[1] << bv4[2]<< std::endl;
+
+
+    int dotted = bv.dot(bv2);
+
+    BasicVector<int> bv5 = bv.cross(bv2);
+
+
+    std::cout << "# DOT PRODUCT RESULT: " << dotted << std::endl;
+
+
+    std::cout << "# ELEMENTS OF SELFMADE BASIC VECTOR AFTER CROSS PRODUCT: " << bv5[0] << bv5[1] << bv5[2]<< std::endl;
+
+
+    // HERE ENDS MY OWN MESS
+
+
+
     ObservablesReducer observablesReducer = observablesReducerBuilder->build();
 
     /* Init em and store the local state in s_try */
@@ -2958,6 +3031,14 @@ void LegacySimulator::do_steep()
             nullptr);
 
     std::cout << "## init_em() returned" << std::endl;
+
+
+    std::cout << "\n # em_state_t s_min:" << std::endl;
+    std::cout << "epot: "<< s_min->epot << ", fnorm: " << s_min->fnorm << " , fmax: " << s_min->fmax << " , a_fmax: " << s_min->a_fmax << std::endl;
+
+    std::cout << "\n # em_state_t s_try:" << std::endl;
+    std::cout << "epot: "<< s_try->epot << ", fnorm: " << s_try->fnorm << " , fmax: " << s_try->fmax << " , a_fmax: " << s_try->a_fmax << std::endl;
+
 
     const bool        simulationsShareState = false;
     gmx_mdoutf*       outf                  = init_mdoutf(fplog,
@@ -3046,10 +3127,39 @@ void LegacySimulator::do_steep()
 
         std::cout << " ## count is: " << count << std::endl;
 
+
+
+        if(count > 1){
+            ForceBuffersView& fbv_try2 = s_try->f.view();
+
+            ArrayRef<RVec> fbv_try_array2 = fbv_try2.force();
+
+            std::cout << " # ARRAYREF<RVEC> koko on: " << fbv_try_array2.size()<< std::endl;
+
+            std::cout << " ## " << fbv_try_array2[0][0] << fbv_try_array2[0][1] << fbv_try_array2[0][2] << std::endl;
+            std::cout << " ## " << fbv_try_array2[1][0] << fbv_try_array2[1][1] << fbv_try_array2[1][2] << std::endl;
+            std::cout << " ## " << fbv_try_array2[2][0] << fbv_try_array2[2][1] << fbv_try_array2[2][2] << std::endl;
+        }
+
+        
+
+
+
+
+
+
+
+
         bAbort = (nsteps >= 0) && (count == nsteps);
 
         /* set new coordinates, except for first step */
         bool validStep = true;
+
+
+
+        // Mikä on s_min ja s_try tila tässä vaiheessa??
+
+
         if (count > 0)
         {   
             std::cout << " ## Setting new coordinates" << std::endl;

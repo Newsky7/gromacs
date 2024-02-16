@@ -204,7 +204,7 @@ static inline void rvec_dec(rvec a, const rvec b)
 static inline void copy_rvec(const rvec a, rvec b)
 {
 
-    std::cout << "  ## api/legacy/include/gromacs/math/vec.h: void_copy_rvec()" << std::endl;
+    //std::cout << "  ## api/legacy/include/gromacs/math/vec.h: void_copy_rvec()" << std::endl;
 
     b[XX] = a[XX];
     b[YY] = a[YY];
