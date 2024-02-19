@@ -108,6 +108,8 @@
 #include "gromacs/math/vectypes.h"
 #include "gromacs/utility/real.h"
 
+#include <iostream>
+
 static inline void rvec_add(const rvec a, const rvec b, rvec c)
 {
     real x, y, z;
@@ -201,6 +203,9 @@ static inline void rvec_dec(rvec a, const rvec b)
 
 static inline void copy_rvec(const rvec a, rvec b)
 {
+
+    //std::cout << "  ## api/legacy/include/gromacs/math/vec.h: void_copy_rvec()" << std::endl;
+
     b[XX] = a[XX];
     b[YY] = a[YY];
     b[ZZ] = a[ZZ];
@@ -260,6 +265,7 @@ static inline void ivec_sub(const ivec a, const ivec b, ivec c)
 
 static inline void copy_mat(const matrix a, matrix b)
 {
+    std::cout << "# api/legacy/include/gromacs/math/vec.h: void_copy_mat()" << std::endl;
     copy_rvec(a[XX], b[XX]);
     copy_rvec(a[YY], b[YY]);
     copy_rvec(a[ZZ], b[ZZ]);

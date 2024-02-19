@@ -925,19 +925,49 @@ int Mdrunner::mdrunner()
     // Print citation requests after all software/hardware printing
     pleaseCiteGromacs(fplog);
 
+
+
+
+
+
     // Note: legacy program logic relies on checking whether these pointers are assigned.
     // Objects may or may not be allocated later.
+    std::cout << "              >> DECLARING UNIQUE_PTR TO inputrec. (Object not allocated)" << std::endl;
     std::unique_ptr<t_inputrec> inputrec;
+
+    std::cout << "              >> DECLARING UNIQUE_PTR TO globalState. (Object not allocated)" << std::endl; 
     std::unique_ptr<t_state>    globalState;
+
+
+
+
+
+
 
     auto partialDeserializedTpr = std::make_unique<PartialDeserializedTprFile>();
 
     if (isSimulationMainRank)
     {
+
+
+
+
+
+
         // Allocate objects to be initialized by later function calls.
         /* Only the main rank has the global state */
+        
+        std::cout << "                  # runner.cpp: >> CREATING UNIQUE POINTERS AND ALLOCATING STRUCTS (inputrec, globalState)" << std::endl;
+
         globalState = std::make_unique<t_state>();
         inputrec    = std::make_unique<t_inputrec>();
+
+
+
+
+
+
+
 
         /* Read (nearly) all data required for the simulation
          * and keep the partly serialized tpr contents to send to other ranks later
@@ -2244,7 +2274,13 @@ int Mdrunner::mdrunner()
 
         // build and run simulator object based on user-input
         auto simulator = simulatorBuilder.build(useModularSimulator);
+
+
+
+        std::cout << "                  # runner.cpp: calling simulator->run()" << std::endl;
         simulator->run();
+        std::cout << "                  # runner.cpp: simulator->run() returned" << std::endl;
+
 
         if (fr->pmePpCommGpu)
         {
