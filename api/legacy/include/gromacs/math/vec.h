@@ -329,6 +329,8 @@ static inline void clear_rvecs(int n, rvec v[])
 
 static inline void clear_mat(matrix a)
 {
+    std::cout << "# void clear_mat()" << std::endl;
+
     const real nul = 0.0;
 
     a[XX][XX] = a[XX][YY] = a[XX][ZZ] = nul;

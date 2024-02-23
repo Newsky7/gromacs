@@ -68,6 +68,9 @@ void nbnxn_put_on_grid(nonbonded_verlet_t*            nb_verlet,
                        int                            numAtomsMoved,
                        const int*                     move)
 {
+
+    std::cout << "# nbnxm.cpp: void nbnxn_put_on_grid()" << std::endl;
+
     nb_verlet->pairSearch_->putOnGrid(box,
                                       gridIndex,
                                       lowerCorner,

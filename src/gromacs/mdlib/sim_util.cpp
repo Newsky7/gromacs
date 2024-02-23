@@ -124,6 +124,8 @@
 
 #include "gpuforcereduction.h"
 
+#include <iostream>
+
 using gmx::ArrayRef;
 using gmx::AtomLocality;
 using gmx::DomainLifetimeWorkload;
@@ -1403,6 +1405,9 @@ void do_force(FILE*                               fplog,
               int                                 legacyFlags,
               const DDBalanceRegionHandler&       ddBalanceRegionHandler)
 {
+
+    std::cout << "# void do_force()" << std::endl;
+
     auto force = forceView->forceWithPadding();
     GMX_ASSERT(force.unpaddedArrayRef().ssize() >= fr->natoms_force_constr,
                "The size of the force buffer should be at least the number of atoms to compute "

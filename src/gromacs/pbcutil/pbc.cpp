@@ -1217,6 +1217,9 @@ void pbc_dx_d(const t_pbc* pbc, const dvec x1, const dvec x2, dvec dx)
 
 void calc_shifts(const matrix box, gmx::ArrayRef<gmx::RVec> shift_vec)
 {
+
+    std::cout << "# void calc_shifts()" << std::endl;
+
     for (int n = 0, m = -gmx::c_dBoxZ; m <= gmx::c_dBoxZ; m++)
     {
         for (int l = -gmx::c_dBoxY; l <= gmx::c_dBoxY; l++)
@@ -1234,6 +1237,9 @@ void calc_shifts(const matrix box, gmx::ArrayRef<gmx::RVec> shift_vec)
 
 void calc_box_center(int ecenter, const matrix box, rvec box_center)
 {
+
+    std::cout << "# void calc_box_center()" << std::endl;
+
     int d, m;
 
     clear_rvec(box_center);

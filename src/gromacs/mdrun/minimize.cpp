@@ -113,6 +113,7 @@
 #include "shellfc.h"
 
 #include <iostream>
+#include <fstream>  
 
 using gmx::ArrayRef;
 using gmx::MdrunScheduleWorkload;
@@ -666,14 +667,14 @@ static bool do_em_step(const t_commrec*                          cr,
 
 {
 
-    std::cout << " ## minimize.cpp: do_em_step()" << std::endl;
+    std::cout << " \n\n     ## minimize.cpp: do_em_step()" << std::endl;
 
     t_state *    s1, *s2;
     int          start, end;
     real         dvdl_constr;
     int nthreads gmx_unused;
 
-    std::cout << "# int nthreads is: " << nthreads << std::endl;
+    std::cout << "          ## int nthreads is: " << nthreads << std::endl;
 
     bool validStep = true;
 
@@ -684,8 +685,8 @@ static bool do_em_step(const t_commrec*                          cr,
     // Here the state is copied?
     // s1 is the previous state and s2 is new state that is to be calculated?
 
-    std::cout << " ## Number of atoms in s1: " << s1->natoms << std::endl;
-    std::cout << " ## Number of temperature coupling groups in s1: " << s1->ngtc << std::endl;
+    std::cout << "          ## Number of atoms in s1: " << s1->natoms << std::endl;
+    std::cout << "          ## Number of temperature coupling groups in s1: " << s1->ngtc << std::endl;
 
 
 
@@ -734,11 +735,49 @@ static bool do_em_step(const t_commrec*                          cr,
     {
         const rvec* x1 = s1->x.rvec_array();
 
+        rvec*       x2 = s2->x.rvec_array();
 
-        for(int i = 0; i<DIM; i++){
-            std::cout << *x1[i] << " ";
+        const rvec* f  = as_rvec_array(force.unpaddedArrayRef().data());
+
+        int gf = 0; 
+
+        
+
+        // Tästä alkaa oma
+
+
+        //std::cout << " \n\n # Content of first 5 rvecs in x \n" << std::endl;
+        
+        
+         /* Tässä kirjoitetaan koordinaatit kullakin iteraatiolla tiedostoon
+
+        const rvec* xcopy = s1->x.rvec_array();
+        
+        std::string path = "/home/tapio/Desktop/Gromacs_coordinates/coordinates"+std::to_string(count);
+        std::ofstream coordinates(path);
+
+
+        coordinates << "Contents of s1->x" << std::endl;
+
+        if (!coordinates) {
+            std::cerr << "Error opening file for writing.\n";
+            return 1;
         }
-        std::cout << std::endl;
+        for(int j = 0; j< s1->natoms; j++){
+            
+            coordinates << j << ": ";
+
+            for(int i = 0; i<DIM; i++){
+            
+                coordinates << xcopy[i][j] << " ";
+            
+            }
+            coordinates << std::endl;
+            //xcopy++;
+        }
+
+        coordinates.close();
+        
 
         
         size_t size1 = sizeof(x1);
@@ -759,34 +798,74 @@ static bool do_em_step(const t_commrec*                          cr,
 
         //std::cout << "# size of rvec x1 should be: 3 and it is :" << sizev << std::endl; 
 
-        rvec*       x2 = s2->x.rvec_array();
+        */
+
+         ///* Writing forces to file
+        std::string path = "/home/tapio/Desktop/Gromacs_forces/forces"+std::to_string(count);
+        std::ofstream forces(path);
+
+
+        forces << "Contents of f. Value of a is: " <<  a <<  std::endl;
+
+
+        const rvec* fcopy  = as_rvec_array(force.unpaddedArrayRef().data());
+
+        for(int i = 0; i< s1->natoms; i++){
+            
+            forces << i << ": ";
+            
+
+            for(int j = 0; j<DIM; j++){
+            
+                forces << fcopy[i][j] << " ";
+            
+            }
+
+            forces << std::endl;
+        }
+
+        forces.close();
+
+        // */
 
         for(int i = 0; i<DIM; i++){
             std::cout << *x2[i] << " ";
         }
         std::cout << std::endl;
+        
 
+        std::cout << "START: " << start << " , END: " << end << std::endl;
 
-        const rvec* f  = as_rvec_array(force.unpaddedArrayRef().data());
+        std::cout << "VALUE OF a is: " << a << std::endl;
 
-        int gf = 0;           
+        // Oma loppuu
+
+                  
 #pragma omp for schedule(static) nowait
         for (int i = start; i < end; i++)
         {
+            //std::cout << "start loop: " << i << std::endl;
             try
             {
                 if (!md->cFREEZE.empty())
                 {
+                    std::cout << "  !md->cFREEZE.empty()" << std::endl;
                     gf = md->cFREEZE[i];
                 }
+
+                // Tässä käydään läpi vektorin kolme dimensiota
                 for (int m = 0; m < DIM; m++)
                 {
+                    //std::cout << "  m loop: " << m << std::endl;
+                    //std::cout << "          x2 value is set here" << std::endl;
                     if (ir->opts.nFreeze[gf][m])
-                    {
+                    {   
+                        // Tässä kopioidaan arvo x1:stä x2:een
                         x2[i][m] = x1[i][m];
                     }
                     else
                     {
+                        // Muussa tapauksessa tehdään jotain muuta, mitä on a ja f?
                         x2[i][m] = x1[i][m] + a * f[i][m];
                     }
                 }
@@ -1036,8 +1115,17 @@ public:
     std::vector<RVec> pairSearchCoordinates;
 };
 
+
+
+
+
+
+
 void EnergyEvaluator::run(em_state_t* ems, rvec mu_tot, tensor vir, tensor pres, int64_t count, gmx_bool bFirst, int64_t step)
 {
+
+    std::cout << "## EnergyEvaluator::run()" << std::endl;
+
     real     t;
     gmx_bool bNS;
     tensor   force_vir, shake_vir, ekin;
@@ -1048,7 +1136,8 @@ void EnergyEvaluator::run(em_state_t* ems, rvec mu_tot, tensor vir, tensor pres,
     t = inputrec->init_t;
 
     if (vsite)
-    {
+    {   
+        std::cout << "vsite is TRUE" << std::endl;
         vsite->construct(ems->s.x, {}, ems->s.box, gmx::VSiteOperation::Positions);
     }
 
@@ -1237,6 +1326,25 @@ void EnergyEvaluator::run(em_state_t* ems, rvec mu_tot, tensor vir, tensor pres,
 }
 
 } // namespace
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //! Parallel utility summing energies and forces
 static double reorder_partsum(const t_commrec*  cr,
@@ -2919,7 +3027,10 @@ void LegacySimulator::do_steep()
 
     const char*       SD = "Steepest Descents";
     gmx_global_stat_t gstat;
+
+    // This is 'a'
     real              stepsize;
+    
     real              ustep;
     gmx_bool          bDone, bAbort, do_x, do_f;
     tensor            vir, pres;
@@ -3125,28 +3236,7 @@ void LegacySimulator::do_steep()
     while (!bDone && !bAbort)
     {
 
-        std::cout << " ## count is: " << count << std::endl;
-
-
-
-        if(count > 1){
-            ForceBuffersView& fbv_try2 = s_try->f.view();
-
-            ArrayRef<RVec> fbv_try_array2 = fbv_try2.force();
-
-            std::cout << " # ARRAYREF<RVEC> koko on: " << fbv_try_array2.size()<< std::endl;
-
-            std::cout << " ## " << fbv_try_array2[0][0] << fbv_try_array2[0][1] << fbv_try_array2[0][2] << std::endl;
-            std::cout << " ## " << fbv_try_array2[1][0] << fbv_try_array2[1][1] << fbv_try_array2[1][2] << std::endl;
-            std::cout << " ## " << fbv_try_array2[2][0] << fbv_try_array2[2][1] << fbv_try_array2[2][2] << std::endl;
-        }
-
-        
-
-
-
-
-
+        std::cout << " ## \n\nMinimization loop iteration: " << count << std::endl;
 
 
 
@@ -3166,6 +3256,25 @@ void LegacySimulator::do_steep()
             validStep = do_em_step(
                     cr, inputrec, mdatoms, s_min, stepsize, s_min->f.view().forceWithPadding(), s_try, constr, count);
         }
+
+
+
+        if(count > 1){
+            std::cout << "PEEK TO s_try\n" << std::endl;
+            ForceBuffersView& fbv_try2 = s_try->f.view();
+
+            ArrayRef<RVec> fbv_try_array2 = fbv_try2.force();
+
+            std::cout << " # ARRAYREF<RVEC> koko on: " << fbv_try_array2.size()<< std::endl;
+            std::cout << " FIRST THREE VECTORS:\n" <<std::endl;
+            std::cout << " ## " << fbv_try_array2[0][0] << ", " << fbv_try_array2[0][1] << ", " << fbv_try_array2[0][2] << std::endl;
+            std::cout << " ## " << fbv_try_array2[1][0] << ", " << fbv_try_array2[1][1] << ", " << fbv_try_array2[1][2] << std::endl;
+            std::cout << " ## " << fbv_try_array2[2][0] << ", " << fbv_try_array2[2][1] << ", " << fbv_try_array2[2][2] << "\n\n" << std::endl;
+        }
+
+
+
+
 
         if (validStep)
         {
@@ -3294,6 +3403,8 @@ void LegacySimulator::do_steep()
         if (!bDone)
         {
             /* Determine new step  */
+            std::cout << "\n# ustep is: " << ustep << std::endl;
+            std::cout << "# s_min->fmax is: " << s_min->fmax << std::endl;
             stepsize = ustep / s_min->fmax;
         }
 
