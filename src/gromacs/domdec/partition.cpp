@@ -2764,6 +2764,10 @@ void dd_partition_system(FILE*                     fplog,
                          gmx_wallcycle*            wcycle,
                          bool                      bVerbose)
 {
+
+    std::cout << "### dd_partition_system" << std::endl;
+
+
     gmx_ddbox_t ddbox = { 0 };
     int         ncgindex_set;
     char        sbuf[22];

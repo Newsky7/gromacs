@@ -1413,11 +1413,33 @@ void do_force(FILE*                               fplog,
                "The size of the force buffer should be at least the number of atoms to compute "
                "forces for");
 
+
+
+    // Check what is in the force
+    // std::cout << force[0][0] << " " << force[0][1] << " " force[0][2] << std::endl;
+
     nonbonded_verlet_t*  nbv = fr->nbv.get();
+
+
+
+    if(nbv->useGpu()){
+        std::cout << "GPU is used for non-bonded calculation" << std::endl;
+    }else{
+        std::cout << "GPU is not used for non-bonded calculation" << std::endl;
+    }
+    if(nbv->emulateGpu()){
+        std::cout << "GPU emulation" << std::endl;
+    }else{
+        std::cout << "no GPU emulation" << std::endl;
+    }
+
+
     interaction_const_t* ic  = fr->ic.get();
 
     gmx::StatePropagatorDataGpu* stateGpu = fr->stateGpu;
 
+
+    // THIS CONTAINS WHICH FORCES ARE CALCULATED ON CPU / GPU
     const SimulationWorkload& simulationWork = runScheduleWork->simulationWork;
 
     if ((legacyFlags & GMX_FORCE_NS) != 0) // Update domainWork on Neighbor Search steps
@@ -1426,14 +1448,69 @@ void do_force(FILE*                               fplog,
         {
             fr->listedForcesGpu->updateHaveInteractions(top->idef);
         }
-        runScheduleWork->domainWork =
-                setupDomainLifetimeWorkload(inputrec, *fr, pull_work, ed, *mdatoms, simulationWork);
+
+
+        // This contains some information as well:
+        runScheduleWork->domainWork = setupDomainLifetimeWorkload(inputrec, *fr, pull_work, ed, *mdatoms, simulationWork);
+        
+
+        std::cout << "\n\n runScheduleWork->domainWork flags:\n" << std::endl; 
+
+        if(runScheduleWork->domainWork.haveGpuBondedWork){
+            std::cout << "1. has bonded work to run on a GPU" << std::endl;
+        }else{
+            std::cout << "1. does not have bonded work to run on a GPU" << std::endl;
+        }
+        if(runScheduleWork->domainWork.haveCpuBondedWork){
+            std::cout << "2. has bonded work to run on a CPU" << std::endl;
+        }else{
+            std::cout << "2. does not have bonded work to run on a CPU" << std::endl;
+        }
+        if(runScheduleWork->domainWork.haveCpuListedForceWork){
+            std::cout << "3. has listed (bonded + restraints) forces work to run on the CPU" << std::endl;
+        }else{
+            std::cout << "3. does not have listed (bonded + restraints) forces work to run on the CPU" << std::endl;
+        }
+        if(runScheduleWork->domainWork.haveSpecialForces){
+            std::cout << "4. has special forces on the CPU" << std::endl;
+        }else{
+            std::cout << "4. does not have special forces on the CPU" << std::endl;
+        }
+        if(runScheduleWork->domainWork.haveCpuLocalForceWork){
+            std::cout << "5. there are currently local forces to be computed on the CPU" << std::endl;
+        }else{
+            std::cout << "5. there are currently NO local forces to be computed on the CPU" << std::endl;
+        }
+        if(runScheduleWork->domainWork.haveCpuNonLocalForceWork){
+            std::cout << "6. there are currently non-local forces to be computed on the CPU and, with GPU update and DD, later reduced on the GPU." << std::endl;
+        }else{
+            std::cout << "6. there are currently NO non-local forces to be computed on the CPU and, with GPU update and DD, later reduced on the GPU." << std::endl;
+        }
+        if(runScheduleWork->domainWork.haveFreeEnergyWork){
+            std::cout << "7. Free energy work on the CPU" << std::endl;
+        }else{
+            std::cout << "7. NO Free energy work on the CPU" << std::endl;
+        }
+        if(runScheduleWork->domainWork.haveLocalForceContribInCpuBuffer){
+            std::cout << "8. the CPU force buffer has contributions to local atoms that need to be reduced on the GPU (with DD)\n\n" << std::endl;
+        }else{
+            std::cout << "8. the CPU force buffer has NO contributions to local atoms that need to be reduced on the GPU (with DD)\n\n" << std::endl;
+        }
+
     }
+
+
+    // GET THE DOMAINWORK FROM RUNSCHEDULEWORK
     const gmx::DomainLifetimeWorkload& domainWork = runScheduleWork->domainWork;
 
-    runScheduleWork->stepWork =
-            setupStepWorkload(legacyFlags, inputrec.mtsLevels, step, domainWork, simulationWork);
+    // SET THE STEPWORK FOR RUNSCHEDULEWORK
+    runScheduleWork->stepWork = setupStepWorkload(legacyFlags, inputrec.mtsLevels, step, domainWork, simulationWork);
+    
+    // GET THE STEPWORK
     const StepWorkload& stepWork = runScheduleWork->stepWork;
+
+
+    // Left here 1.3.2024 17.37
 
     if (stepWork.doNeighborSearch && gmx::needStateGpu(simulationWork))
     {
