@@ -669,6 +669,9 @@ static void nbnxn_atomdata_set_atomtypes(nbnxn_atomdata_t::Params* params,
                                          const Nbnxm::GridSet&     gridSet,
                                          ArrayRef<const int>       atomTypes)
 {
+
+    std::cout << "####### void nbnxn_atomdata_set_atomtypes() " << std::endl;
+
     params->type.resize(gridSet.numGridAtomsTotal());
 
     for (const Nbnxm::Grid& grid : gridSet.grids())
@@ -898,6 +901,9 @@ void nbnxn_atomdata_set(nbnxn_atomdata_t*       nbat,
                         ArrayRef<const real>    atomCharges,
                         ArrayRef<const int64_t> atomInfo)
 {
+
+    std::cout << "####### void nbnxn_atomdata_set() " << std::endl;
+
     nbnxn_atomdata_t::Params& params = nbat->paramsDeprecated();
 
     nbnxn_atomdata_set_atomtypes(&params, gridSet, atomTypes);
@@ -918,6 +924,9 @@ void nbnxn_atomdata_set(nbnxn_atomdata_t*       nbat,
 /* Copies the shift vector array to nbnxn_atomdata_t */
 void nbnxn_atomdata_copy_shiftvec(gmx_bool bDynamicBox, gmx::ArrayRef<gmx::RVec> shift_vec, nbnxn_atomdata_t* nbat)
 {
+
+    std::cout << "##### nbnxn_atomdata_copy_shiftvec() called" << std::endl;
+
     nbat->bDynamicBox = bDynamicBox;
     std::copy(shift_vec.begin(), shift_vec.end(), nbat->shift_vec.begin());
 }

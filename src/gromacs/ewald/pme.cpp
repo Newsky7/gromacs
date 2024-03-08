@@ -1142,6 +1142,9 @@ int gmx_pme_do(struct gmx_pme_t*              pme,
                real*                          dvdlambda_lj,
                const gmx::StepWorkload&       stepWork)
 {
+
+    std::cout << "\n\n ## int gmx_pme_do() " << std::endl;
+
     GMX_ASSERT(pme->runMode == PmeRunMode::CPU,
                "gmx_pme_do should not be called on the GPU PME run.");
 
@@ -1217,8 +1220,14 @@ int gmx_pme_do(struct gmx_pme_t*              pme,
     /* If we are doing LJ-PME with LB, we only do Q here */
     const int max_grid_index = (pme->ljpme_combination_rule == LongRangeVdW::LB) ? DO_Q : DO_Q_AND_LJ;
     bool      bClearF;
+
+
+    std::cout << "## START OF LOOP" << std::endl;
     for (int grid_index = 0; grid_index < max_grid_index; ++grid_index)
     {
+
+        std::cout << " ## LOOP: Grid index: " << grid_index << std::endl;
+
         /* Check if we should do calculations at this grid_index
          * If grid_index is odd we should be doing FEP
          * If grid_index < 2 we should be doing electrostatic PME
@@ -1229,6 +1238,9 @@ int gmx_pme_do(struct gmx_pme_t*              pme,
         {
             continue;
         }
+
+        std::cout << " passed" << std::endl;
+
         /* Unpack structure */
         pmegrid    = &pme->pmegrid[grid_index];
         fftgrid    = pme->fftgrid[grid_index];
@@ -1295,6 +1307,8 @@ int gmx_pme_do(struct gmx_pme_t*              pme,
             {
                 thread = gmx_omp_get_thread_num();
                 int loop_count;
+
+                std::cout << thread << std::endl;
 
                 /* do 3d-fft */
                 if (thread == 0)
@@ -1432,6 +1446,8 @@ int gmx_pme_do(struct gmx_pme_t*              pme,
         }
         bFirst = FALSE;
     } /* of grid_index-loop */
+
+    std::cout <<" ## end of LOOP" << std::endl;
 
     /* For Lorentz-Berthelot combination rules in LJ-PME, we need to calculate
      * seven terms. */
@@ -1753,6 +1769,10 @@ int gmx_pme_do(struct gmx_pme_t*              pme,
             *energy_lj = 0;
         }
     }
+
+    std::cout << " ## int gmx_pme_do() RETURNS\n\n" << std::endl;
+
+
     return 0;
 }
 

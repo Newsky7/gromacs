@@ -44,6 +44,8 @@
 
 #include "domdec_internal.h"
 
+#include <iostream>
+
 /*! \brief Struct for timing the region for dynamic load balancing */
 class BalanceRegion::Impl
 {
@@ -215,6 +217,9 @@ void dd_force_flop_start(gmx_domdec_t* dd, t_nrnb* nrnb)
 
 void dd_force_flop_stop(gmx_domdec_t* dd, t_nrnb* nrnb)
 {
+
+    std::cout << "### void dd_force_flop_stop()" << std::endl;
+
     if (dd->comm->ddSettings.eFlop)
     {
         dd->comm->flop += force_flop_count(nrnb);

@@ -157,6 +157,10 @@ void CpuPpLongRangeNonbondeds::calculate(gmx_pme_t*                     pmedata,
                                          const gmx::StepWorkload&       stepWork,
                                          const DDBalanceRegionHandler&  ddBalanceRegionHandler)
 {
+
+    std::cout << " ############ void CpuPpLongRangeNonbondeds::calculate()" << std::endl;
+
+
     const bool computePmeOnCpu = (usingPme(coulombInteractionType_) || usingLJPme(vanDerWaalsType_))
                                  && thisRankHasDuty(commrec, DUTY_PME)
                                  && (pme_run_mode(pmedata) == PmeRunMode::CPU);

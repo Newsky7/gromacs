@@ -45,6 +45,7 @@
 #include "gromacs/math/gmxcomplex.h"
 #include "gromacs/utility/fatalerror.h"
 #include "gromacs/utility/real.h"
+#include <iostream>
 
 /* This file contains common fft utility functions, but not
  * the actual transform implementations. Check the
@@ -160,6 +161,9 @@ void gmx_many_fft_destroy(gmx_fft_t fft)
 
 int gmx_fft_transpose_2d(t_complex* in_data, t_complex* out_data, int nx, int ny)
 {
+
+    std::cout << "sda" << std::endl;
+
     int  i, j, k, im, n, ncount;
     bool done1, done2;
     int  i1, i1c, i2, i2c, kmi, max;

@@ -44,6 +44,8 @@
 #include "gromacs/utility/enumerationhelpers.h"
 #include "gromacs/utility/fatalerror.h"
 
+#include <iostream>
+
 ForeignLambdaTerms::ForeignLambdaTerms(
         const gmx::EnumerationArray<FreeEnergyPerturbationCouplingType, std::vector<double>>* allLambdas) :
     numLambdas_(allLambdas ? gmx::ssize((*allLambdas)[FreeEnergyPerturbationCouplingType::Fep]) : 0),
@@ -168,8 +170,12 @@ static real sum_v(int n, gmx::ArrayRef<const real> v)
 
 void sum_epot(const gmx_grppairener_t& grpp, real* epot)
 {
-    int i;
 
+
+    std::cout << "#### void sum_epot()" << std::endl;
+
+    int i;
+    
     /* Accumulate energies */
     epot[F_COUL_SR] = sum_v(grpp.nener, grpp.energyGroupPairTerms[NonBondedEnergyTerms::CoulombSR]);
     epot[F_LJ]      = sum_v(grpp.nener, grpp.energyGroupPairTerms[NonBondedEnergyTerms::LJSR]);
@@ -292,6 +298,10 @@ void ForeignLambdaTerms::finalizePotentialContributions(
 
 void accumulatePotentialEnergies(gmx_enerdata_t* enerd, gmx::ArrayRef<const real> lambda, const t_lambda* fepvals)
 {
+
+
+    std::cout<< "##### void accumulatePotentialEnergies()" << std::endl;
+
     sum_epot(enerd->grpp, enerd->term.data());
 
     if (fepvals)

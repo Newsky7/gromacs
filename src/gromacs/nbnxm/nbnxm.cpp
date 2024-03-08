@@ -91,8 +91,18 @@ void nbnxn_put_on_grid_nonlocal(nonbonded_verlet_t*              nbv,
                                 gmx::ArrayRef<const int64_t>     atomInfo,
                                 gmx::ArrayRef<const gmx::RVec>   x)
 {
+
+    std::cout << " ## void nbnxn_put_on_grid_nonlocal() called" << std::endl;
+
+    std::cout << "  ## Number of zones is " << zones->n << std::endl;
+
+
+    // This does not get called?
     for (int zone = 1; zone < zones->n; zone++)
     {
+
+        std::cout << "## ZONE: " << zone << std::endl;
+
         rvec c0, c1;
         for (int d = 0; d < DIM; d++)
         {
@@ -144,6 +154,7 @@ void nonbonded_verlet_t::setAtomProperties(gmx::ArrayRef<const int>     atomType
                                            gmx::ArrayRef<const real>    atomCharges,
                                            gmx::ArrayRef<const int64_t> atomInfo) const
 {
+    std::cout << "##### void nonbonded_verlet_t::setAtomProperties()" << std::endl;
     nbnxn_atomdata_set(nbat.get(), pairSearch_->gridSet(), atomTypes, atomCharges, atomInfo);
 }
 

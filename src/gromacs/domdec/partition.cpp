@@ -3373,6 +3373,10 @@ void dd_partition_system(FILE*                     fplog,
     }
 
     wallcycle_stop(wcycle, WallCycleCounter::Domdec);
+
+
+    std::cout << "## void dd_partition_system() returning" << std::endl;
+
 }
 
 } // namespace gmx

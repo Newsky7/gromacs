@@ -56,6 +56,8 @@
 #include "gromacs/utility/gmxmpi.h"
 #include "gromacs/utility/smalloc.h"
 
+#include <iostream>
+
 #ifdef NOGMX
 #    define GMX_PARALLEL_ENV_INITIALIZED 1
 #else
@@ -1084,6 +1086,10 @@ static void print_localdata(const t_complex* lin, const char* txt, int s, fft5d_
 
 void fft5d_execute(fft5d_plan plan, int thread, fft5d_time times)
 {
+
+
+    std::cout << "## void fft5d_execute()" << std::endl;
+
     t_complex* lin   = plan->lin;
     t_complex* lout  = plan->lout;
     t_complex* lout2 = plan->lout2;
@@ -1102,7 +1108,7 @@ void fft5d_execute(fft5d_plan plan, int thread, fft5d_time times)
         **oNout = plan->oNout;
     int s       = 0, tstart, tend, bParallelDim;
 
-
+     
 #if GMX_FFT_FFTW3
     if (plan->p3d)
     {
@@ -1121,11 +1127,14 @@ void fft5d_execute(fft5d_plan plan, int thread, fft5d_time times)
                 times->fft += MPI_Wtime() - time;
             }
 #    endif
-        }
+        }    
+        std::cout << "## void fft5d_execute() returns" << std::endl;
+
         return;
+          
+
     }
 #endif
-
     s = 0;
 
     /*lin: x,y,z*/
@@ -1188,7 +1197,7 @@ void fft5d_execute(fft5d_plan plan, int thread, fft5d_time times)
                             lin + tstart,
                             fftout + tstart);
         }
-
+          
 #ifdef NOGMX
         if (times != NULL && thread == 0)
         {
@@ -1202,6 +1211,7 @@ void fft5d_execute(fft5d_plan plan, int thread, fft5d_time times)
         /* ---------- END FFT ------------ */
 
         /* ---------- START SPLIT + TRANSPOSE------------ (if parallel in in this dimension)*/
+      
         if (bParallelDim)
         {
 #ifdef NOGMX
@@ -1299,7 +1309,7 @@ void fft5d_execute(fft5d_plan plan, int thread, fft5d_time times)
             time = MPI_Wtime();
         }
 #endif
-
+     
         if (bParallelDim)
         {
             joinin = lout3;
@@ -1385,6 +1395,7 @@ void fft5d_execute(fft5d_plan plan, int thread, fft5d_time times)
     }
     /*  ----------- FFT ----------- */
     tstart = (thread * pM[s] * pK[s] / plan->nthreads) * C[s];
+    
     if ((plan->flags & FFT5D_REALCOMPLEX) && (plan->flags & FFT5D_BACKWARD))
     {
         gmx_fft_many_1d_real(p1d[s][thread],
@@ -1400,7 +1411,7 @@ void fft5d_execute(fft5d_plan plan, int thread, fft5d_time times)
                         lout + tstart);
     }
     /* ------------ END FFT ---------*/
-
+    
 #ifdef NOGMX
     if (times != NULL && thread == 0)
     {
@@ -1417,6 +1428,10 @@ void fft5d_execute(fft5d_plan plan, int thread, fft5d_time times)
     {
         print_localdata(lout, "%d %d: FFT %d\n", s, plan);
     }
+
+
+    std::cout << "## void fft5d_execute() returns" << std::endl;
+
 }
 
 void fft5d_destroy(fft5d_plan plan)

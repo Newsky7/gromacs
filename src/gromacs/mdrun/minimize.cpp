@@ -243,6 +243,9 @@ static void get_f_norm_max(const t_commrec*               cr,
                            real*                          fmax,
                            int*                           a_fmax)
 {
+
+    std::cout << "# void get_f_norm_max()" << std::endl;
+
     double fnorm2, *sum;
     real   fmax2, fam;
     int    la_max, a_max, start, end, i, m, gf;
@@ -832,8 +835,14 @@ void EnergyEvaluator::run(em_state_t* ems, rvec mu_tot, tensor vir, tensor pres,
 
     if (bNS)
     {
+
+        std::cout << "### bNS is TRUE" << std::endl;
+
         if (haveDDAtomOrdering(*cr))
         {
+
+            std::cout << "#### haveDDAtomOrdering is TRUE: Repartitioning the domain decomposition" << std::endl;
+
             /* Repartition the domain decomposition */
             em_dd_partition_system(fplog,
                                    mdlog,
@@ -1277,9 +1286,15 @@ static bool do_em_step(const t_commrec*                          cr,
         const rvec* xcopy_s2 = s2->x.rvec_array();
         
         //std::string path = "/home/tapio/Desktop/Gromacs_coordinates/coordinates"+std::to_string(count);
-        std::string path_s1 = "/home/tee/Desktop/Gromacs_analytics/coordinates/s1/s1_"+std::to_string(count);
+        
+        // This is for home setup
+        //std::string path_s1 = "/home/tee/Desktop/Gromacs_analytics/coordinates/s1/s1_"+std::to_string(count);
+        //std::string path_s2 = "/home/tee/Desktop/Gromacs_analytics/coordinates/s2/s2_"+std::to_string(count);
 
-        std::string path_s2 = "/home/tee/Desktop/Gromacs_analytics/coordinates/s2/s2_"+std::to_string(count);
+
+        // This is for rtx1
+        std::string path_s1 = "/home/tapio/PROJECT/GROMACS_DATA/coordinates/s1/s1_"+std::to_string(count);
+        std::string path_s2 = "/home/tapio/PROJECT/GROMACS_DATA/coordinates/s2/s2_"+std::to_string(count);
 
 
         std::ofstream coordinates_s1(path_s1);

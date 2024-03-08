@@ -987,6 +987,11 @@ static StepWorkload setupStepWorkload(const int                     legacyFlags,
                                       const DomainLifetimeWorkload& domainWork,
                                       const SimulationWorkload&     simulationWork)
 {
+
+
+    std::cout << " ## static StepWorkload setupStepWorkload()" << std::endl;
+
+
     GMX_ASSERT(mtsLevels.empty() || mtsLevels.size() == 2, "Expect 0 or 2 MTS levels");
     const bool computeSlowForces = (mtsLevels.empty() || step % mtsLevels[1].stepFactor == 0);
 
@@ -1027,6 +1032,35 @@ static StepWorkload setupStepWorkload(const int                     legacyFlags,
     // On NS steps, the buffer is cleared in stateGpu->reinit, no need to clear it twice.
     flags.clearGpuFBufferEarly =
             flags.useGpuFHalo && !domainWork.haveCpuLocalForceWork && !flags.doNeighborSearch;
+
+
+    std::cout << "\n  ## Set the following flags: " <<std::endl;
+    std::cout << "  ## -------------------" << std::endl;
+    std::cout << "  ## 1. stateChanged: " << flags.stateChanged << std::endl;
+    std::cout << "  ## 2. haveDynamicBox: " << flags.haveDynamicBox << std::endl;
+    std::cout << "  ## 3. doNeighborSearch: " << flags.doNeighborSearch << std::endl;
+    std::cout << "  ## 4. computeSlowForces: " << flags.computeSlowForces << std::endl;
+    std::cout << "  ## 5. computeVirial: " << flags.computeVirial << std::endl;
+    std::cout << "  ## 6. computeEnergy: " << flags.computeEnergy << std::endl;
+    std::cout << "  ## 7. compute Forces: " << flags.computeForces << std::endl;
+    std::cout << "  ## 8. useOnlyMtsCombinedForceBuffer: " << flags.useOnlyMtsCombinedForceBuffer << std::endl;
+    std::cout << "  ## 9. computeListedForces: " << flags.computeListedForces << std::endl;
+    std::cout << "  ## 10. computeNonBondedForces: " << flags.computeNonbondedForces << std::endl;
+    std::cout << "  ## 11. computeDhdl: " << flags.computeDhdl << std::endl;
+    std::cout << "  ## 12. useGpuXBufferOps: " << flags.useGpuXBufferOps << std::endl;
+    std::cout << "  ## 13. useGpuFBufferOps: " << flags.useGpuFBufferOps << std::endl;
+    std::cout << "  ## 14. useGpuPmeFReduction: " << flags.useGpuPmeFReduction << std::endl;
+    std::cout << "  ## 15. useGpuXHalo: " << flags.useGpuXHalo << std::endl;
+    std::cout << "  ## 16. useGpuFHalo: " << flags.useGpuFHalo << std::endl;
+    std::cout << "  ## 17. haveGpuPmeOnThisRank: " << flags.haveGpuPmeOnThisRank << std::endl;
+    std::cout << "  ## 18. computePmeOnSeparateRank: " << flags.computePmeOnSeparateRank << std::endl;
+    std::cout << "  ## 19. combineMtsForcesBeforeHaloExchange: " << flags.combineMtsForcesBeforeHaloExchange << std::endl;
+    std::cout << "  ## 20. clearGpuFBufferEarly: " << flags.clearGpuFBufferEarly << std::endl;
+
+    std::cout<< "  ## --------------------\n" << std::endl;
+
+
+    std::cout << " ## static StepWorkload setupStepWorkload() returns" << std::endl;
 
     return flags;
 }
@@ -1235,6 +1269,9 @@ static void combineMtsForces(const int      numAtoms,
                              ArrayRef<RVec> forceMts,
                              const real     mtsFactor)
 {
+
+    std::cout << " ## void combineMtsForces()" << std::endl;
+
     const int gmx_unused numThreads = gmx_omp_nthreads_get(ModuleMultiThread::Default);
 #pragma omp parallel for num_threads(numThreads) schedule(static)
     for (int i = 0; i < numAtoms; i++)
@@ -1243,6 +1280,7 @@ static void combineMtsForces(const int      numAtoms,
         forceMtsLevel0[i] += forceMts[i];
         forceMts[i] = forceMtsLevel0Tmp + mtsFactor * forceMts[i];
     }
+    std::cout << " ## void combineMtsForces() returns" << std::endl;
 }
 
 /*! \brief Setup for the local GPU force reduction:
@@ -1406,40 +1444,25 @@ void do_force(FILE*                               fplog,
               const DDBalanceRegionHandler&       ddBalanceRegionHandler)
 {
 
-    std::cout << "# void do_force()" << std::endl;
+    std::cout << "\n\n\n# void do_force()" << std::endl;
+    std::cout << "\n # Main data structures:" << std::endl;
+    std::cout << " # 1. nonbonded_verlet_t* nbv" << std::endl;
+    std::cout << " # 2. interaction_const_t* ic" << std::endl;
+    std::cout << " # 3. StepWorkload stepWork\n" << std::endl;
 
     auto force = forceView->forceWithPadding();
+
     GMX_ASSERT(force.unpaddedArrayRef().ssize() >= fr->natoms_force_constr,
                "The size of the force buffer should be at least the number of atoms to compute "
                "forces for");
 
 
-
-    // Check what is in the force
-    // std::cout << force[0][0] << " " << force[0][1] << " " force[0][2] << std::endl;
-
+    // These are the data structures
     nonbonded_verlet_t*  nbv = fr->nbv.get();
-
-
-
-    if(nbv->useGpu()){
-        std::cout << "GPU is used for non-bonded calculation" << std::endl;
-    }else{
-        std::cout << "GPU is not used for non-bonded calculation" << std::endl;
-    }
-    if(nbv->emulateGpu()){
-        std::cout << "GPU emulation" << std::endl;
-    }else{
-        std::cout << "no GPU emulation" << std::endl;
-    }
-
-
     interaction_const_t* ic  = fr->ic.get();
 
     gmx::StatePropagatorDataGpu* stateGpu = fr->stateGpu;
 
-
-    // THIS CONTAINS WHICH FORCES ARE CALCULATED ON CPU / GPU
     const SimulationWorkload& simulationWork = runScheduleWork->simulationWork;
 
     if ((legacyFlags & GMX_FORCE_NS) != 0) // Update domainWork on Neighbor Search steps
@@ -1448,72 +1471,22 @@ void do_force(FILE*                               fplog,
         {
             fr->listedForcesGpu->updateHaveInteractions(top->idef);
         }
-
-
-        // This contains some information as well:
-        runScheduleWork->domainWork = setupDomainLifetimeWorkload(inputrec, *fr, pull_work, ed, *mdatoms, simulationWork);
-        
-
-        std::cout << "\n\n runScheduleWork->domainWork flags:\n" << std::endl; 
-
-        if(runScheduleWork->domainWork.haveGpuBondedWork){
-            std::cout << "1. has bonded work to run on a GPU" << std::endl;
-        }else{
-            std::cout << "1. does not have bonded work to run on a GPU" << std::endl;
-        }
-        if(runScheduleWork->domainWork.haveCpuBondedWork){
-            std::cout << "2. has bonded work to run on a CPU" << std::endl;
-        }else{
-            std::cout << "2. does not have bonded work to run on a CPU" << std::endl;
-        }
-        if(runScheduleWork->domainWork.haveCpuListedForceWork){
-            std::cout << "3. has listed (bonded + restraints) forces work to run on the CPU" << std::endl;
-        }else{
-            std::cout << "3. does not have listed (bonded + restraints) forces work to run on the CPU" << std::endl;
-        }
-        if(runScheduleWork->domainWork.haveSpecialForces){
-            std::cout << "4. has special forces on the CPU" << std::endl;
-        }else{
-            std::cout << "4. does not have special forces on the CPU" << std::endl;
-        }
-        if(runScheduleWork->domainWork.haveCpuLocalForceWork){
-            std::cout << "5. there are currently local forces to be computed on the CPU" << std::endl;
-        }else{
-            std::cout << "5. there are currently NO local forces to be computed on the CPU" << std::endl;
-        }
-        if(runScheduleWork->domainWork.haveCpuNonLocalForceWork){
-            std::cout << "6. there are currently non-local forces to be computed on the CPU and, with GPU update and DD, later reduced on the GPU." << std::endl;
-        }else{
-            std::cout << "6. there are currently NO non-local forces to be computed on the CPU and, with GPU update and DD, later reduced on the GPU." << std::endl;
-        }
-        if(runScheduleWork->domainWork.haveFreeEnergyWork){
-            std::cout << "7. Free energy work on the CPU" << std::endl;
-        }else{
-            std::cout << "7. NO Free energy work on the CPU" << std::endl;
-        }
-        if(runScheduleWork->domainWork.haveLocalForceContribInCpuBuffer){
-            std::cout << "8. the CPU force buffer has contributions to local atoms that need to be reduced on the GPU (with DD)\n\n" << std::endl;
-        }else{
-            std::cout << "8. the CPU force buffer has NO contributions to local atoms that need to be reduced on the GPU (with DD)\n\n" << std::endl;
-        }
-
+        runScheduleWork->domainWork =
+                setupDomainLifetimeWorkload(inputrec, *fr, pull_work, ed, *mdatoms, simulationWork);
     }
-
-
-    // GET THE DOMAINWORK FROM RUNSCHEDULEWORK
+    
     const gmx::DomainLifetimeWorkload& domainWork = runScheduleWork->domainWork;
 
-    // SET THE STEPWORK FOR RUNSCHEDULEWORK
-    runScheduleWork->stepWork = setupStepWorkload(legacyFlags, inputrec.mtsLevels, step, domainWork, simulationWork);
-    
-    // GET THE STEPWORK
+    runScheduleWork->stepWork =
+            setupStepWorkload(legacyFlags, inputrec.mtsLevels, step, domainWork, simulationWork);
+
     const StepWorkload& stepWork = runScheduleWork->stepWork;
-
-
-    // Left here 1.3.2024 17.37
 
     if (stepWork.doNeighborSearch && gmx::needStateGpu(simulationWork))
     {
+
+        std::cout << " ### stepWork.doNeighborSearch and needStateGpu SET" << std::endl;
+
         // TODO refactor this to do_md, after partitioning.
         stateGpu->reinit(mdatoms->homenr,
                          getLocalAtomCount(cr->dd, *mdatoms, simulationWork.havePpDomainDecomposition));
@@ -1553,18 +1526,67 @@ void do_force(FILE*                               fplog,
 
     clear_mat(vir_force);
 
+
+
+    if(fr->pbcType == PbcType::No){
+        std::cout << "fr->pbcType is: No: 1 (No periodic boundaries)" << std::endl;
+    }else if(fr->pbcType == PbcType::Xyz){
+        std::cout << "fr->pbcType is: Xyz: 0 (Periodic boundaries in all dimensions.)" << std::endl;
+    }else if(fr->pbcType == PbcType::XY){
+        std::cout << "fr->pbcType is: XY: 2 (Only two dimensions are periodic.)" << std::endl;
+    }else if(fr->pbcType == PbcType::Screw){
+        std::cout << "fr->pbcType is: No: 3 (screw)" << std::endl;
+    }
+
+
     if (fr->pbcType != PbcType::No)
     {
         /* Compute shift vectors every step,
          * because of pressure coupling or box deformation!
          */
+
+        if(stepWork.haveDynamicBox){
+            std::cout << "### stepWork.haveDynamicBox IS TRUE" << std::endl;
+        }
+
+        if(stepWork.stateChanged){
+            std::cout << "### stepWork.stateChanged IS TRUE" << std::endl;
+        }
+
+
+
         if (stepWork.haveDynamicBox && stepWork.stateChanged)
         {
             calc_shifts(box, fr->shift_vec);
         }
 
+
+
+
         const bool fillGrid = (stepWork.doNeighborSearch && stepWork.stateChanged);
+
+
+        if(fillGrid){
+            std::cout << "#### stepWork.doNeighborSearch and stepWork.stateChanged ARE TRUE" << std::endl;
+        }
+
+        
+
+
         const bool calcCGCM = (fillGrid && !haveDDAtomOrdering(*cr));
+        
+
+        if(calcCGCM){
+            std::cout << "#### stepWork.doNeighborSearch and stepWork.stateChanged AND NOT haveDDAtomOrdering() ARE TRUE" << std::endl;
+        }
+
+
+        if(haveDDAtomOrdering(*cr)){
+            std::cout<< "##### haveDDAtomOrdering(*cr)  IS TRUE " << std::endl;
+        }
+
+
+        
         if (calcCGCM)
         {
             put_atoms_in_box_omp(fr->pbcType,
@@ -1631,6 +1653,9 @@ void do_force(FILE*                               fplog,
 
     if (stepWork.computePmeOnSeparateRank)
     {
+
+        std::cout << "#### stepWork.computePmeOnSeparateRank IS TRUE" << std::endl;
+
         /* Send particle coordinates to the pme nodes */
         if (!pmeSendCoordinatesFromGpu && !stepWork.doNeighborSearch && simulationWork.useGpuUpdate)
         {
@@ -1670,8 +1695,10 @@ void do_force(FILE*                               fplog,
     /* do gridding for pair search */
     if (stepWork.doNeighborSearch)
     {
+        std::cout << " # Doing gridding for pair search" << std::endl;
         if (fr->wholeMoleculeTransform && stepWork.stateChanged)
         {
+            std::cout << " # fr->wholeMoleculeTransform && stepWork.stateChanged ARE TRUE" << std::endl;
             fr->wholeMoleculeTransform->updateForAtomPbcJumps(x.unpaddedArrayRef(), box);
         }
 
@@ -1701,14 +1728,24 @@ void do_force(FILE*                               fplog,
             nbnxn_put_on_grid_nonlocal(nbv, domdec_zones(cr->dd), fr->atomInfo, x.unpaddedArrayRef());
             wallcycle_sub_stop(wcycle, WallCycleSubCounter::NBSGridNonLocal);
         }
+        
 
         nbv->setAtomProperties(mdatoms->typeA, mdatoms->chargeA, fr->atomInfo);
 
         wallcycle_stop(wcycle, WallCycleCounter::NS);
 
+        if(simulationWork.useGpuNonbonded){
+            std::cout << "########## simulationWork.useGpuNonbonded is TRUE" << std::endl;
+        }else{
+            std::cout << "########## simulationWork.useGpuNonbonded is FALSE" << std::endl;
+
+        }
+
+
         /* initialize the GPU nbnxm atom data and bonded data structures */
         if (simulationWork.useGpuNonbonded)
         {
+
             // Note: cycle counting only nononbondeds, GPU listed forces counts internally
             wallcycle_start_nocount(wcycle, WallCycleCounter::LaunchGpuPp);
             wallcycle_sub_start_nocount(wcycle, WallCycleSubCounter::LaunchGpuNonBonded);
@@ -1831,6 +1868,7 @@ void do_force(FILE*                               fplog,
        do non-local pair search */
     if (simulationWork.havePpDomainDecomposition)
     {
+        std::cout << "###### simulationWork.havePpDomainDecomposition is TRUE" << std::endl;
         if (stepWork.doNeighborSearch)
         {
             // TODO: fuse this branch with the above large stepWork.doNeighborSearch block
@@ -2673,6 +2711,9 @@ void do_force(FILE*                               fplog,
 
     if (stepWork.computeEnergy)
     {
+
+        std::cout << "#### stepWork.computeEnergy is TRUE" << std::endl;
+
         /* Compute the final potential energy terms */
         accumulatePotentialEnergies(enerd, lambda, inputrec.fepvals.get());
 
@@ -2689,4 +2730,7 @@ void do_force(FILE*                               fplog,
      * the balance timing, which is ok as most tasks do communication.
      */
     ddBalanceRegionHandler.openBeforeForceComputationCpu(DdAllowBalanceRegionReopen::no);
+
+    std::cout << "# do_force() returns\n\n" << std::endl;
+
 }
