@@ -49,6 +49,7 @@
 #include "gromacs/gpu_utils/gpueventsynchronizer.h"
 #include "gromacs/mdlib/gpuforcereduction_impl_internal.h"
 #include "gromacs/utility/gmxassert.h"
+#include <iostream>
 
 namespace gmx
 {
@@ -115,6 +116,8 @@ void GpuForceReduction::Impl::addDependency(GpuEventSynchronizer* dependency)
 
 void GpuForceReduction::Impl::execute()
 {
+    std::cout << "#### GpuForceReduction::Impl::execute() called" << std::endl;
+
     wallcycle_start_nocount(wcycle_, WallCycleCounter::LaunchGpuPp);
     wallcycle_sub_start(wcycle_, WallCycleSubCounter::LaunchGpuNBFBufOps);
 
@@ -162,6 +165,11 @@ void GpuForceReduction::Impl::execute()
 
     wallcycle_sub_stop(wcycle_, WallCycleSubCounter::LaunchGpuNBFBufOps);
     wallcycle_stop(wcycle_, WallCycleCounter::LaunchGpuPp);
+
+
+
+    std::cout << "#### GpuForceReduction::Impl::execute() returns" << std::endl;
+
 }
 
 GpuForceReduction::GpuForceReduction(const DeviceContext& deviceContext,
@@ -197,6 +205,8 @@ void GpuForceReduction::reinit(DeviceBuffer<RVec>    baseForcePtr,
 }
 void GpuForceReduction::execute()
 {
+
+    std::cout << "void GpuForceReduction::execute() CALLED" << std::endl;
     impl_->execute();
 }
 

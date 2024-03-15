@@ -1143,7 +1143,7 @@ int gmx_pme_do(struct gmx_pme_t*              pme,
                const gmx::StepWorkload&       stepWork)
 {
 
-    std::cout << "\n\n ## int gmx_pme_do() " << std::endl;
+    std::cout << "\n\n # int gmx_pme_do() CALLED " << std::endl;
 
     GMX_ASSERT(pme->runMode == PmeRunMode::CPU,
                "gmx_pme_do should not be called on the GPU PME run.");

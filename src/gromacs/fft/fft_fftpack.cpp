@@ -44,6 +44,7 @@
 #include "gromacs/fft/fft.h"
 #include "gromacs/utility/fatalerror.h"
 #include "gromacs/utility/real.h"
+#include <iostream>
 
 /*! \internal
  * \brief
@@ -71,6 +72,7 @@ struct gmx_fft
 
 int gmx_fft_init_1d(gmx_fft_t* pfft, int nx, int gmx_unused flags)
 {
+    std::cout << "FFT_FFTPACK" << std::endl;
     gmx_fft_t fft;
 
     if (pfft == nullptr)

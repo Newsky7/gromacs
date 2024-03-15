@@ -45,6 +45,7 @@
 #include "gromacs/fft/fft.h"
 #include "gromacs/utility/exceptions.h"
 #include "gromacs/utility/fatalerror.h"
+#include <iostream>
 
 #if GMX_DOUBLE
 #    define FFTWPREFIX(name) fftw_##name
@@ -111,6 +112,9 @@ int gmx_fft_init_1d(gmx_fft_t* pfft, int nx, gmx_fft_flag flags)
 
 int gmx_fft_init_many_1d(gmx_fft_t* pfft, int nx, int howmany, gmx_fft_flag flags)
 {
+
+    std::cout <<"test call" << std::endl;
+
     gmx_fft_t fft;
     FFTWPREFIX(complex) * p1, *p2, *up1, *up2;
     char* pc;
@@ -231,6 +235,9 @@ int gmx_fft_init_1d_real(gmx_fft_t* pfft, int nx, gmx_fft_flag flags)
 
 int gmx_fft_init_many_1d_real(gmx_fft_t* pfft, int nx, int howmany, gmx_fft_flag flags)
 {
+
+    std::cout << "test call" << std::endl;
+
     gmx_fft_t fft;
     real *    p1, *p2, *up1, *up2;
     char*     pc;
@@ -425,7 +432,11 @@ int gmx_fft_init_many_1d_real(gmx_fft_t* pfft, int nx, int howmany, gmx_fft_flag
 
 
 int gmx_fft_init_2d_real(gmx_fft_t* pfft, int nx, int ny, gmx_fft_flag flags)
-{
+{   
+
+
+    std::cout << "TEST CALL"  << std::endl;
+
     gmx_fft_t fft;
     real *    p1, *p2, *up1, *up2;
     char*     pc;
@@ -536,6 +547,8 @@ int gmx_fft_init_2d_real(gmx_fft_t* pfft, int nx, int ny, gmx_fft_flag flags)
 
 int gmx_fft_1d(gmx_fft_t fft, enum gmx_fft_direction dir, void* in_data, void* out_data)
 {
+    std::cout << "TEST CALL"  << std::endl;
+
     bool aligned   = (((size_t(in_data) | size_t(out_data)) & 0xf) == 0);
     bool inplace   = (in_data == out_data);
     bool isforward = (dir == GMX_FFT_FORWARD);
@@ -599,7 +612,10 @@ int gmx_fft_many_1d_real(gmx_fft_t fft, enum gmx_fft_direction dir, void* in_dat
 }
 
 int gmx_fft_2d_real(gmx_fft_t fft, enum gmx_fft_direction dir, void* in_data, void* out_data)
-{
+{   
+
+    std::cout << "TEST CALL"  << std::endl;
+
     bool aligned   = (((size_t(in_data) | size_t(out_data)) & 0xf) == 0);
     bool inplace   = (in_data == out_data);
     bool isforward = (dir == GMX_FFT_REAL_TO_COMPLEX);
@@ -633,6 +649,8 @@ int gmx_fft_2d_real(gmx_fft_t fft, enum gmx_fft_direction dir, void* in_data, vo
 
 void gmx_fft_destroy(gmx_fft_t fft)
 {
+
+    std::cout << "TEST CALL"  << std::endl;
     int i, j, k;
 
     if (fft != nullptr)

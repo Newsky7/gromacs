@@ -41,6 +41,7 @@
 
 #include "gromacs/fft/fft.h"
 #include "gromacs/utility/fatalerror.h"
+#include <iostream>
 
 
 /* For MKL version (<10.0), we should define MKL_LONG. */
@@ -518,6 +519,7 @@ int gmx_fft_1d_real(gmx_fft_t fft, enum gmx_fft_direction dir, void* in_data, vo
 
 int gmx_fft_2d_real(gmx_fft_t fft, enum gmx_fft_direction dir, void* in_data, void* out_data)
 {
+    std::cout << "FFT_MKL" << std::endl;
     int inplace = (in_data == out_data);
     int status  = 0;
 

@@ -162,6 +162,8 @@ void gmx_many_fft_destroy(gmx_fft_t fft)
 int gmx_fft_transpose_2d(t_complex* in_data, t_complex* out_data, int nx, int ny)
 {
 
+    std::cout << "TESTIII" << std::endl;
+
     std::cout << "sda" << std::endl;
 
     int  i, j, k, im, n, ncount;

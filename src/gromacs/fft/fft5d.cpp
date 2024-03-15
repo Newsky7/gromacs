@@ -1088,7 +1088,7 @@ void fft5d_execute(fft5d_plan plan, int thread, fft5d_time times)
 {
 
 
-    std::cout << "## void fft5d_execute()" << std::endl;
+    std::cout << "### void fft5d_execute() CALLED" << std::endl;
 
     t_complex* lin   = plan->lin;
     t_complex* lout  = plan->lout;
@@ -1120,6 +1120,8 @@ void fft5d_execute(fft5d_plan plan, int thread, fft5d_time times)
                 time = MPI_Wtime();
             }
 #    endif
+            std::cout<< "Calling FFTW(execute)(plan->p3d)"<< std::endl;
+            
             FFTW(execute)(plan->p3d);
 #    ifdef NOGMX
             if (times != 0)
@@ -1128,7 +1130,8 @@ void fft5d_execute(fft5d_plan plan, int thread, fft5d_time times)
             }
 #    endif
         }    
-        std::cout << "## void fft5d_execute() returns" << std::endl;
+        // HUOM! TÄSTÄ PALATAAN JO
+        std::cout << "### void fft5d_execute() RETURNS\n\n" << std::endl;
 
         return;
           

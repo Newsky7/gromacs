@@ -45,6 +45,7 @@
 #include "config.h"
 
 #include "gpuforcereduction.h"
+#include <iostream>
 
 #if !HAVE_GPU_FORCE_REDUCTION
 
@@ -95,6 +96,7 @@ void GpuForceReduction::addDependency(GpuEventSynchronizer* const /* dependency 
 // NOLINTNEXTLINE readability-convert-member-functions-to-static
 void GpuForceReduction::execute()
 {
+    std::cout << "void GpuForceReduction::execute()" << std::endl;
     GMX_RELEASE_ASSERT(false, "A CPU stub has been called instead of the correct implementation.");
 }
 
