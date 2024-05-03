@@ -1698,7 +1698,7 @@ void do_force(FILE*                               fplog,
         std::cout << " # Doing gridding for pair search" << std::endl;
         if (fr->wholeMoleculeTransform && stepWork.stateChanged)
         {
-            std::cout << " # fr->wholeMoleculeTransform && stepWork.stateChanged ARE TRUE" << std::endl;
+            std::cout << "  # fr->wholeMoleculeTransform && stepWork.stateChanged ARE TRUE" << std::endl;
             fr->wholeMoleculeTransform->updateForAtomPbcJumps(x.unpaddedArrayRef(), box);
         }
 

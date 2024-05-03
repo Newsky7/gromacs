@@ -269,6 +269,9 @@ void gmx_sum_qgrid_dd(gmx_pme_t* pme, real* grid, const int direction)
 
 int copy_pmegrid_to_fftgrid(const gmx_pme_t* pme, const real* pmegrid, real* fftgrid, int grid_index)
 {
+
+    std::cout << "  + int copy_pmegrid_to_fftgrid() CALLED (ewald/pme_grid.cpp)" << std::endl;
+
     ivec local_fft_ndata, local_fft_offset, local_fft_size;
     ivec local_pme_size;
     int  ix, iy, iz;
@@ -345,7 +348,10 @@ int copy_pmegrid_to_fftgrid(const gmx_pme_t* pme, const real* pmegrid, real* fft
         gmx_ffclose(fp);
         gmx_ffclose(fp2);
 #endif
+
     }
+
+    std::cout << "      -- int copy_pmegrid_to_fftgrid (ewald/pme_grid.cpp) RETURNS" << std::endl;
     return 0;
 }
 
@@ -365,6 +371,11 @@ static gmx_cycles_t omp_cyc_end(gmx_cycles_t c)
 
 int copy_fftgrid_to_pmegrid(struct gmx_pme_t* pme, const real* fftgrid, real* pmegrid, int grid_index, int nthread, int thread)
 {
+
+    std::cout << "      -- int copy_fftgrid_to_pmegrid (ewald/pme_grid.cpp)" << std::endl;
+
+
+
     ivec local_fft_ndata, local_fft_offset, local_fft_size;
     ivec local_pme_size;
     int  ixy0, ixy1, ixy, ix, iy, iz;
@@ -414,6 +425,9 @@ int copy_fftgrid_to_pmegrid(struct gmx_pme_t* pme, const real* fftgrid, real* pm
         printf("copy %.2f\n", cs1 * 1e-9);
     }
 #endif
+
+
+    std::cout << "      -- int copy_fftgrid_to_pmegrid (ewald/pme_grid.cpp) RETURNS" << std::endl;
 
     return 0;
 }

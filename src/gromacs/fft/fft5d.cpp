@@ -158,6 +158,9 @@ fft5d_plan fft5d_plan_3d(int                NG,
                          gmx::PinningPolicy realGridAllocationPinningPolicy)
 {
 
+
+    std::cout << "#### fft5d_plan_3d() CALLED" << std::endl;
+
     int  P[2], prank[2], i;
     bool bMain;
     int  rNG, rMG, rKG;
@@ -1121,7 +1124,6 @@ void fft5d_execute(fft5d_plan plan, int thread, fft5d_time times)
             }
 #    endif
             std::cout<< "Calling FFTW(execute)(plan->p3d)"<< std::endl;
-            
             FFTW(execute)(plan->p3d);
 #    ifdef NOGMX
             if (times != 0)

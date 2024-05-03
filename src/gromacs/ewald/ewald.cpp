@@ -67,6 +67,7 @@
 #include "gromacs/utility/arrayref.h"
 #include "gromacs/utility/fatalerror.h"
 #include "gromacs/utility/smalloc.h"
+#include <iostream>
 
 using cvec = std::array<t_complex, DIM>;
 
@@ -144,6 +145,10 @@ real do_ewald(bool                           havePbcXY2Walls,
               real*                          dvdlambda,
               gmx_ewald_tab_t*               et)
 {
+
+
+    std::cout << "--- real do_ewald() called" << std::endl;
+
     real   factor = -1.0 / (4 * ewaldcoeff * ewaldcoeff);
     real   energy_AB[2], energy;
     rvec   lll;
@@ -303,6 +308,10 @@ real do_ewald(bool                           havePbcXY2Walls,
     lrvir[ZZ][YY] = lrvir[YY][ZZ];
 
     energy *= scaleRecip;
+
+
+    std::cout << "--- do_ewald() returning" << std::endl;
+
 
     return energy;
 }

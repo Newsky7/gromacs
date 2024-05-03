@@ -175,7 +175,7 @@ int gmx_parallel_3dfft_execute(gmx_parallel_3dfft_t   pfft_setup,
 
 
 
-    std::cout << "## int gmx_parallel_3dfft_execute()" << std::endl;
+    std::cout << "## int gmx_parallel_3dfft_execute() CALLED" << std::endl;
 
     if (((pfft_setup->p1->flags & FFT5D_REALCOMPLEX) == 0)
         ^ (dir == GMX_FFT_FORWARD || dir == GMX_FFT_BACKWARD))
@@ -184,10 +184,12 @@ int gmx_parallel_3dfft_execute(gmx_parallel_3dfft_t   pfft_setup,
     }
     if (dir == GMX_FFT_FORWARD || dir == GMX_FFT_REAL_TO_COMPLEX)
     {
+        std::cout << " - fft5d_execute() CALLED FORWARD" << std::endl;
         fft5d_execute(pfft_setup->p1, thread, wcycle);
     }
     else
     {
+        std::cout << " - fft5d_execute() CALLED BACKWARD" << std::endl;
         fft5d_execute(pfft_setup->p2, thread, wcycle);
     }
 

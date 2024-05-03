@@ -362,6 +362,8 @@ void gather_f_bsplines(const gmx_pme_t*    pme,
 
 real gather_energy_bsplines(gmx_pme_t* pme, const real* grid, PmeAtomComm* atc)
 {
+    std::cout << "      -- real gather_energy_bsplines() called" << std::endl;
+
     splinedata_t* spline;
     int           ithx, ithy, ithz, i0, j0, k0;
     int           index_x, index_xy;

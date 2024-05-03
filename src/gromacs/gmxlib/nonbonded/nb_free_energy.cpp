@@ -61,6 +61,8 @@
 
 #include "nb_softcore.h"
 
+#include <iostream>
+
 //! Scalar (non-SIMD) data types.
 struct ScalarDataTypes
 {
@@ -295,6 +297,10 @@ static void nb_free_energy_kernel(const t_nblist&                               
 #define STATE_A 0
 #define STATE_B 1
 #define NSTATES 2
+
+
+    std::cout << "###############AAAAAAAAAAAAA#################" << std::endl;
+
 
     using RealType = typename DataTypes::RealType;
     using IntType  = typename DataTypes::IntType;

@@ -1142,8 +1142,10 @@ int gmx_pme_do(struct gmx_pme_t*              pme,
                real*                          dvdlambda_lj,
                const gmx::StepWorkload&       stepWork)
 {
+    std::cout << "\n\n##################################"<<std::endl;
+    std::cout << "# int gmx_pme_do() CALLED (ewald/pme.cpp) #" << std::endl;
+    std::cout << "######################################\n\n"<<std::endl;
 
-    std::cout << "\n\n # int gmx_pme_do() CALLED " << std::endl;
 
     GMX_ASSERT(pme->runMode == PmeRunMode::CPU,
                "gmx_pme_do should not be called on the GPU PME run.");
@@ -1222,7 +1224,13 @@ int gmx_pme_do(struct gmx_pme_t*              pme,
     bool      bClearF;
 
 
-    std::cout << "## START OF LOOP" << std::endl;
+    std::cout << " STATUS OF WHAT IS CALCULATED:\n";
+    std::cout<< " pme->doCoulomb: " << pme->doCoulomb << std::endl;
+    std::cout << " pme->doLJ: " << pme->doLJ << std::endl;
+    std::cout << " pme->bFEP_q: " << pme->bFEP_q << std::endl;
+    std::cout << " pme->bFEP_lj: " << pme->bFEP_lj << std::endl;  
+
+    std::cout << "\n\n## START OF LOOP (Iterating through force calculations). Max index is " << max_grid_index << std::endl;
     for (int grid_index = 0; grid_index < max_grid_index; ++grid_index)
     {
 
@@ -1236,10 +1244,11 @@ int gmx_pme_do(struct gmx_pme_t*              pme,
         if ((grid_index < DO_Q && (!pme->doCoulomb || (grid_index == 1 && !pme->bFEP_q)))
             || (grid_index >= DO_Q && (!pme->doLJ || (grid_index == 3 && !pme->bFEP_lj))))
         {
+            std::cout << " > skipping loop iteration because we are not supposed to calculate anything" << std::endl;
             continue;
         }
 
-        std::cout << " passed" << std::endl;
+        //std::cout << " passed" << std::endl;
 
         /* Unpack structure */
         pmegrid    = &pme->pmegrid[grid_index];
@@ -1308,7 +1317,7 @@ int gmx_pme_do(struct gmx_pme_t*              pme,
                 thread = gmx_omp_get_thread_num();
                 int loop_count;
 
-                std::cout << thread << std::endl;
+                std::cout << "OMP parallel, thread: " <<thread << std::endl;
 
                 /* do 3d-fft */
                 if (thread == 0)

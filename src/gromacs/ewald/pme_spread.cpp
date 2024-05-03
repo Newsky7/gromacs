@@ -56,10 +56,15 @@
 #include "pme_spline_work.h"
 #include "spline_vectors.h"
 
+#include <iostream>
+
 /* TODO consider split of pme-spline from this file */
 
 static void calc_interpolation_idx(const gmx_pme_t* pme, PmeAtomComm* atc, int start, int grid_index, int end, int thread)
 {
+
+    std::cout << "      -> void calc_interpolation_idx() CALLED (ewald/pme_spread.cpp)" << std::endl;
+
     int         i;
     int *       idxptr, tix, tiy, tiz;
     const real* xptr;
@@ -175,6 +180,8 @@ static void calc_interpolation_idx(const gmx_pme_t* pme, PmeAtomComm* atc, int s
         }
         /* Now tpl_n contains the cummulative count again */
     }
+    std::cout << "      <- void calc_interpolation_idx() RETURNS (ewald/pme_spread.cpp)" << std::endl;
+
 }
 
 static void make_thread_local_ind(const PmeAtomComm* atc, int thread, splinedata_t* spline)
@@ -213,8 +220,11 @@ static void make_thread_local_ind(const PmeAtomComm* atc, int thread, splinedata
 /* Macro to force loop unrolling by fixing order.
  * This gives a significant performance gain.
  */
+
+        //std::cout << "CALC_SPLINE" << std::endl;                                                                                            
+
 #define CALC_SPLINE(order)                                                                               \
-    {                                                                                                    \
+    {                                                                                                     \
         for (int j = 0; (j < DIM); j++)                                                                  \
         {                                                                                                \
             real dr, div;                                                                                \
@@ -891,6 +901,9 @@ void spread_on_grid(const gmx_pme_t*  pme,
                     gmx_bool          bDoSplines,
                     int               grid_index)
 {
+
+    std::cout << "  -> void spread_on_grid() CALLED (ewald/pme_spread.cpp)" << std::endl;
+
 #ifdef PME_TIME_THREADS
     gmx_cycles_t  c1, c2, c3, ct1a, ct1b, ct1c;
     static double cs1 = 0, cs2 = 0, cs3 = 0;
@@ -1051,4 +1064,7 @@ void spread_on_grid(const gmx_pme_t*  pme,
         printf("\n");
     }
 #endif
+
+    std::cout << "  <- void spread_on_grid() RETURNS (ewald/pme_spread.cpp)" << std::endl;
+
 }

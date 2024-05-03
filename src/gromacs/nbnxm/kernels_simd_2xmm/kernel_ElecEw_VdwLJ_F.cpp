@@ -49,6 +49,7 @@
 
 #define GMX_SIMD_J_UNROLL_SIZE 2
 #include "kernels.h"
+#include <iostream>
 
 #define CALC_COUL_EWALD
 #define LJ_CUT
@@ -76,6 +77,12 @@ void nbnxm_kernel_ElecEw_VdwLJ_F_2xmm(const NbnxnPairlistCpu gmx_unused* nbl,
 #    include "kernel_outer.h"
 #else  /* GMX_NBNXN_SIMD_2XNN */
 {
+
+    #ifdef CALC_ENERGIES
+    std::cout << "void nbnxm_kernel_ElecEw_VdwLJ_F_2xmm()" << std::endl;
+    #else
+    std::cout << "void nbnxm_kernel_ElecEw_VdwLJ_F_2xmm()" << std::endl;
+    #endif
     /* No need to call gmx_incons() here, because the only function
      * that calls this one is also compiled conditionally. When
      * GMX_NBNXN_SIMD_2XNN is not defined, it will call no kernel functions and

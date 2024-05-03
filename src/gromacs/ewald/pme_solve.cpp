@@ -326,6 +326,9 @@ using PME_T = real;
 
 int solve_pme_yzx(const gmx_pme_t* pme, t_complex* grid, real vol, bool computeEnergyAndVirial, int nthread, int thread)
 {
+
+    std::cout << "  + int solve_pme_yzx() CALLED (ewald/pme_solve.cpp)" << std::endl;
+
     /* do recip sum over local cells in grid */
     /* y major, z middle, x minor or continuous */
     t_complex*               p0;
