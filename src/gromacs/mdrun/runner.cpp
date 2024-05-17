@@ -182,6 +182,9 @@
 
 #include <iostream>
 
+#include "tracy/Tracy.hpp"
+
+
 namespace gmx
 {
 
@@ -470,6 +473,7 @@ static void mdrunner_start_fn(const void* arg)
 
 void Mdrunner::spawnThreads(int numThreadsToLaunch)
 {
+    ZoneScoped;
 #if GMX_THREAD_MPI
     /* now spawn new threads that start mdrunner_start_fn(), while
        the main thread returns. Thread affinity is handled later. */
@@ -503,6 +507,8 @@ static void prepare_verlet_scheme(FILE*                          fplog,
                                   bool                           makeGpuPairList,
                                   const gmx::CpuInfo&            cpuinfo)
 {
+
+    ZoneScoped;
     // We checked the cut-offs in grompp, but double-check here.
     // We have PME+LJcutoff kernels for rcoulomb>rvdw.
     if (usingPmeOrEwald(ir->coulombtype) && ir->vdwtype == VanDerWaalsType::Cut)
@@ -621,6 +627,7 @@ static bool gpuAccelerationOfNonbondedIsUseful(const MDLogger&   mdlog,
                                                const bool        issueWarning,
                                                const bool        doRerun)
 {
+    ZoneScoped;
 
     std::cout << " ## src/gromacs/mdrun/runner.cpp: gpuAccelerationOfNonbondedIsUseful" << std::endl;
 
@@ -689,6 +696,8 @@ static gmx::LoggerOwner buildLogger(FILE* fplog, const bool isSimulationMainRank
 static TaskTarget findTaskTarget(const char* optionString)
 {
 
+    ZoneScoped;
+
     std::cout << " ## src/gromacs/mdrun/runner.cpp: findTaskTarget()" << std::endl;
 
     TaskTarget returnValue = TaskTarget::Auto;
@@ -726,7 +735,7 @@ static void finish_run(FILE*                     fplog,
                        gmx_bool                  bWriteStat)
 {
 
-
+    ZoneScoped;
     std::cout << " ## src/gromacs/mdrun/runner.cpp: finish_run()" << std::endl;
 
     double delta_t = 0;
@@ -869,8 +878,7 @@ static void finish_run(FILE*                     fplog,
 int Mdrunner::mdrunner()
 {
 
-    std::cout << " ## src/gromacs/mdrun/runner.cpp: Mdrunner::mdrunner()" << std::endl;
-
+    ZoneScoped;
 
     std::unique_ptr<t_forcerec> fr;
     real                        ewaldcoeff_q     = 0;
@@ -948,11 +956,6 @@ int Mdrunner::mdrunner()
 
     if (isSimulationMainRank)
     {
-
-
-
-
-
 
         // Allocate objects to be initialized by later function calls.
         /* Only the main rank has the global state */
@@ -2278,7 +2281,11 @@ int Mdrunner::mdrunner()
 
 
         std::cout << "                  # runner.cpp: calling simulator->run()" << std::endl;
+        TracyMessageL("runner.cpp: calling simulator->run()");
+
         simulator->run();
+        TracyMessageL("runner.cpp: simulator->run() returned");
+
         std::cout << "                  # runner.cpp: simulator->run() returned" << std::endl;
 
 
@@ -2787,6 +2794,7 @@ MdrunnerBuilder::~MdrunnerBuilder() = default;
 
 MdrunnerBuilder& MdrunnerBuilder::addHardwareDetectionResult(const gmx_hw_info_t* hwinfo)
 {
+    ZoneScoped;
     impl_->addHardwareDetectionResult(hwinfo);
     return *this;
 }
@@ -2795,36 +2803,42 @@ MdrunnerBuilder& MdrunnerBuilder::addSimulationMethod(const MdrunOptions&    opt
                                                       real                   forceWarningThreshold,
                                                       const StartingBehavior startingBehavior)
 {
+    ZoneScoped;
     impl_->setExtraMdrunOptions(options, forceWarningThreshold, startingBehavior);
     return *this;
 }
 
 MdrunnerBuilder& MdrunnerBuilder::addDomainDecomposition(const DomdecOptions& options)
 {
+    ZoneScoped;
     impl_->addDomdec(options);
     return *this;
 }
 
 MdrunnerBuilder& MdrunnerBuilder::addNeighborList(int nstlist)
 {
+    ZoneScoped;
     impl_->addVerletList(nstlist);
     return *this;
 }
 
 MdrunnerBuilder& MdrunnerBuilder::addReplicaExchange(const ReplicaExchangeParameters& params)
 {
+    ZoneScoped;
     impl_->addReplicaExchange(params);
     return *this;
 }
 
 MdrunnerBuilder& MdrunnerBuilder::addNonBonded(const char* nbpu_opt)
 {
+    ZoneScoped;
     impl_->addNonBonded(nbpu_opt);
     return *this;
 }
 
 MdrunnerBuilder& MdrunnerBuilder::addElectrostatics(const char* pme_opt, const char* pme_fft_opt)
 {
+    ZoneScoped;
     // The builder method may become more general in the future, but in this version,
     // parameters for PME electrostatics are both required and the only parameters
     // available.
@@ -2842,41 +2856,48 @@ MdrunnerBuilder& MdrunnerBuilder::addElectrostatics(const char* pme_opt, const c
 
 MdrunnerBuilder& MdrunnerBuilder::addBondedTaskAssignment(const char* bonded_opt)
 {
+    ZoneScoped;
     impl_->addBondedTaskAssignment(bonded_opt);
     return *this;
 }
 
 MdrunnerBuilder& MdrunnerBuilder::addUpdateTaskAssignment(const char* update_opt)
 {
+    ZoneScoped;
     impl_->addUpdateTaskAssignment(update_opt);
     return *this;
 }
 
 Mdrunner MdrunnerBuilder::build()
 {
+    ZoneScoped;
     return impl_->build();
 }
 
 MdrunnerBuilder& MdrunnerBuilder::addHardwareOptions(const gmx_hw_opt_t& hardwareOptions)
 {
+    ZoneScoped;
     impl_->addHardwareOptions(hardwareOptions);
     return *this;
 }
 
 MdrunnerBuilder& MdrunnerBuilder::addFilenames(ArrayRef<const t_filenm> filenames)
 {
+    ZoneScoped;
     impl_->addFilenames(filenames);
     return *this;
 }
 
 MdrunnerBuilder& MdrunnerBuilder::addOutputEnvironment(gmx_output_env_t* outputEnvironment)
 {
+    ZoneScoped;
     impl_->addOutputEnvironment(outputEnvironment);
     return *this;
 }
 
 MdrunnerBuilder& MdrunnerBuilder::addLogFile(t_fileio* logFileHandle)
 {
+    ZoneScoped;
     impl_->addLogFile(logFileHandle);
     return *this;
 }
@@ -2889,6 +2910,7 @@ MdrunnerBuilder& MdrunnerBuilder::addStopHandlerBuilder(std::unique_ptr<StopHand
 
 MdrunnerBuilder& MdrunnerBuilder::addInput(SimulationInputHandle input)
 {
+    ZoneScoped;
     impl_->addInput(std::move(input));
     return *this;
 }

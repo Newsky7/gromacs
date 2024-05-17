@@ -47,6 +47,9 @@
 #include "gromacs/utility/basedefinitions.h"
 #include "gromacs/utility/enumerationhelpers.h"
 
+#include "tracy/Tracy.hpp"
+
+
 #ifndef DEBUG_WCYCLE
 /*! \brief Enables consistency checking for the counters.
  *
@@ -235,6 +238,7 @@ void debug_stop_check(gmx_wallcycle* wc, WallCycleCounter ewc);
 //! Starts the cycle counter (and increases the call count)
 inline void wallcycle_start(gmx_wallcycle* wc, WallCycleCounter ewc)
 {
+    ZoneScoped;
     if (wc == nullptr)
     {
         return;
@@ -276,6 +280,8 @@ inline void wallcycle_start_nocount(gmx_wallcycle* wc, WallCycleCounter ewc)
 //! Stop the cycle count for ewc , returns the last cycle count
 inline double wallcycle_stop(gmx_wallcycle* wc, WallCycleCounter ewc)
 {
+
+    ZoneScoped;
     gmx_cycles_t cycle, last;
 
     if (wc == nullptr)

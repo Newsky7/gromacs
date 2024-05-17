@@ -58,6 +58,8 @@
 
 #include "runnercommon.h"
 
+#include "tracy/Tracy.hpp"
+
 namespace gmx
 {
 
@@ -74,6 +76,8 @@ public:
     explicit RunnerModule(TrajectoryAnalysisModulePointer module) :
         module_(std::move(module)), common_(&settings_)
     {
+        ZoneScoped;
+        ZoneText("RunnerModule constructor",strlen("RunnerModule constructor"));
     }
 
     void init(CommandLineModuleSettings* /*settings*/) override {}
@@ -186,6 +190,7 @@ void TrajectoryAnalysisCommandLineRunner::registerModule(CommandLineModuleManage
                                                          const char*                description,
                                                          const ModuleFactoryMethod& factory)
 {
+    ZoneScoped;
     auto runnerFactory = [factory] { return createModule(factory()); };
     ICommandLineOptionsModule::registerModuleFactory(manager, name, description, runnerFactory);
 }
@@ -194,6 +199,7 @@ void TrajectoryAnalysisCommandLineRunner::registerModule(CommandLineModuleManage
 std::unique_ptr<ICommandLineOptionsModule>
 TrajectoryAnalysisCommandLineRunner::createModule(TrajectoryAnalysisModulePointer module)
 {
+    ZoneScoped;
     return ICommandLineOptionsModulePointer(new RunnerModule(std::move(module)));
 }
 

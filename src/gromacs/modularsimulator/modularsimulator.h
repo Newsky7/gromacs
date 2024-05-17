@@ -53,6 +53,9 @@
 
 #include "gromacs/mdrun/isimulator.h"
 
+#include "tracy/Tracy.hpp"
+
+
 struct CheckpointHeaderContents;
 struct t_fcdata;
 struct t_trxframe;
@@ -129,6 +132,9 @@ template<typename... Ts>
 auto checkUseModularSimulator(Ts&&... args)
         -> decltype(ModularSimulator::isInputCompatible(std::forward<Ts>(args)...))
 {
+
+    ZoneScoped;
+
     return ModularSimulator::isInputCompatible(std::forward<Ts>(args)...)
            && getenv("GMX_DISABLE_MODULAR_SIMULATOR") == nullptr;
 }

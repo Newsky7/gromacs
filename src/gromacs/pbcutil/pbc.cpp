@@ -59,6 +59,9 @@
 #include "gromacs/utility/gmxassert.h"
 #include "gromacs/utility/smalloc.h"
 
+#include "tracy/Tracy.hpp"
+
+
 const gmx::EnumerationArray<PbcType, std::string> c_pbcTypeNames = {
     { "xyz", "no", "xy", "screw", "unset" }
 };
@@ -1217,7 +1220,7 @@ void pbc_dx_d(const t_pbc* pbc, const dvec x1, const dvec x2, dvec dx)
 
 void calc_shifts(const matrix box, gmx::ArrayRef<gmx::RVec> shift_vec)
 {
-
+    ZoneScoped;
     std::cout << "# void calc_shifts()" << std::endl;
 
     for (int n = 0, m = -gmx::c_dBoxZ; m <= gmx::c_dBoxZ; m++)

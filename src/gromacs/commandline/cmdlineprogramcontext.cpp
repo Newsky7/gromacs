@@ -41,6 +41,9 @@
  * \author Teemu Murtola <teemu.murtola@gmail.com>
  * \ingroup module_commandline
  */
+
+#include "tracy/Tracy.hpp"
+
 #include "gmxpre.h"
 
 #include "cmdlineprogramcontext.h"

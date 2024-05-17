@@ -53,6 +53,9 @@
 #include "pairlistsets.h"
 #include "pairsearch.h"
 
+#include "tracy/Tracy.hpp"
+
+
 /*! \cond INTERNAL */
 
 void nbnxn_put_on_grid(nonbonded_verlet_t*            nb_verlet,
@@ -258,6 +261,9 @@ void nonbonded_verlet_t::atomdata_init_copy_x_to_nbat_x_gpu() const
 
 bool buildSupportsNonbondedOnGpu(std::string* error)
 {
+
+    ZoneScoped;
+
     gmx::MessageStringCollector errorReasons;
     // Before changing the prefix string, make sure that it is not searched for in regression tests.
     errorReasons.startContext("Nonbonded interactions on GPUs are not supported in:");

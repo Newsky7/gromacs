@@ -71,6 +71,9 @@
 #include "gromacs/utility/physicalnodecommunicator.h"
 #include "gromacs/utility/stringutil.h"
 
+#include "tracy/Tracy.hpp"
+
+
 
 /* DISCLAIMER: All the atom count and thread numbers below are heuristic.
  * The real switching points will depend on the system simulation,
@@ -368,6 +371,9 @@ int get_nthreads_mpi(const gmx_hw_info_t* hwinfo,
                      const gmx::MDLogger& mdlog,
                      bool                 doMembed)
 {
+
+    ZoneScoped;
+
     int nthreads_hw, nthreads_tot_max, nrank, ngpu;
     int min_atoms_per_mpi_rank;
 
@@ -683,6 +689,7 @@ void checkAndUpdateHardwareOptions(const gmx::MDLogger& mdlog,
                                    const int            nPmeRanks,
                                    const t_inputrec*    inputrec)
 {
+    ZoneScoped;
     /* Currently hw_opt only contains default settings or settings supplied
      * by the user on the command line.
      */

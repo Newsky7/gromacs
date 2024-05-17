@@ -39,6 +39,8 @@
 #include "gromacs/fileio/tpxio.h"
 #include "gromacs/mdtypes/state.h"
 #include "gromacs/utility/enumerationhelpers.h"
+#include "tracy/Tracy.hpp"
+
 
 template<typename AllocatorType>
 static void bcastPaddedRVecVector(MPI_Comm                                     communicator,
@@ -127,6 +129,7 @@ void init_parallel(MPI_Comm                    communicator,
                    gmx_mtop_t*                 mtop,
                    PartialDeserializedTprFile* partialDeserializedTpr)
 {
+    ZoneScoped;
     bc_tpxheader(communicator, &partialDeserializedTpr->header);
     bc_tprCharBuffer(communicator, isMainRank, &partialDeserializedTpr->body);
     if (!isMainRank)

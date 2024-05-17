@@ -46,6 +46,11 @@
 #include "gromacs/utility/fatalerror.h"
 #include "gromacs/utility/gmxmpi.h"
 
+#include "tracy/Tracy.hpp"
+
+
+
+
 bool gmx_mpi_initialized()
 {
 #if !GMX_MPI
@@ -60,6 +65,7 @@ bool gmx_mpi_initialized()
 
 int gmx_node_num()
 {
+    ZoneScoped;
 #if !GMX_MPI
     return 1;
 #else
@@ -77,6 +83,7 @@ int gmx_node_num()
 
 int gmx_node_rank()
 {
+    ZoneScoped;
 #if !GMX_MPI
     return 0;
 #else

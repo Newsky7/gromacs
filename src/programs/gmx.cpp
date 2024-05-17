@@ -47,12 +47,19 @@
 #include "legacymodules.h"
 #include <iostream>
 
+#include "tracy/Tracy.hpp"
+
 int main(int argc, char* argv[])
 {
+    ZoneScopedC(0x008000);
+    TracyMessageL("TESTI");
+
 
     std::cout << " ## | src/programs/gmx.cpp: main() " << std::endl; 
 
     gmx::CommandLineProgramContext& context = gmx::initForCommandLine(&argc, &argv);
+    ZoneText("ENDING",strlen("ENDING"));
+
     try
     {
         gmx::CommandLineModuleManager manager("gmx", &context);

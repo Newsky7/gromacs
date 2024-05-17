@@ -31,9 +31,25 @@
 # To help us fund GROMACS development, we humbly ask that you cite
 # the research papers on the package. Check out https://www.gromacs.org.
 
+
+include(FetchContent)
+
+    FetchContent_Declare (
+        tracy
+        GIT_REPOSITORY https://github.com/wolfpld/tracy.git
+        GIT_TAG master
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
+        )
+
+FetchContent_MakeAvailable (tracy)
+
+
 add_library(commandline INTERFACE)
 file(GLOB COMMANDLINE_SOURCES *.cpp)
 set(LIBGROMACS_SOURCES ${LIBGROMACS_SOURCES} ${COMMANDLINE_SOURCES} PARENT_SCOPE)
+
+target_link_libraries(commandline INTERFACE TracyClient)
 
 # Source files have the following private module dependencies.
 target_link_libraries(commandline PRIVATE

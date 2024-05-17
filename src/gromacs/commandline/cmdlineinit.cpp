@@ -60,6 +60,7 @@
 #include "gromacs/utility/programcontext.h"
 #include "gromacs/utility/smalloc.h"
 
+#include "tracy/Tracy.hpp"
 
 #include <iostream>
 
@@ -85,6 +86,7 @@ std::unique_ptr<DataFileFinder> g_libFileFinder;
  */
 void broadcastWorld(int size, void* buffer)
 {
+    ZoneScoped;
 #if GMX_MPI
     MPI_Bcast(buffer, size, MPI_BYTE, 0, MPI_COMM_WORLD);
 #else
@@ -102,7 +104,8 @@ void broadcastWorld(int size, void* buffer)
  */
 void broadcastArguments(int* argc, char*** argv)
 {
-    std::cout << " ## ----| src/gromacs/commandline/cmdlineinit.cpp: broadcastArguments()" << std::endl;
+
+    ZoneScoped;
 
     if (gmx_node_num() <= 1)
     {
@@ -137,8 +140,7 @@ void broadcastArguments(int* argc, char*** argv)
 
 CommandLineProgramContext& initForCommandLine(int* argc, char*** argv)
 {
-
-    std::cout << " ## --| src/gromacs/commandline/cmdlinemodulemanager.cpp: initForCommandLine()" << std::endl;
+    ZoneScopedC(0x8A2BE2);
 
     gmx::init(argc, argv);
     GMX_RELEASE_ASSERT(!g_commandLineContext, "initForCommandLine() calls cannot be nested");
@@ -159,14 +161,13 @@ CommandLineProgramContext& initForCommandLine(int* argc, char*** argv)
         std::exit(processExceptionAtExit(ex));
     }
 
-
-    std::cout << std::endl;
-
     return *g_commandLineContext;
 }
 
 void finalizeForCommandLine()
 {
+    ZoneScopedC(0x483D8B);
+
     gmx::finalize();
     setLibraryFileFinder(nullptr);
     g_libFileFinder.reset();

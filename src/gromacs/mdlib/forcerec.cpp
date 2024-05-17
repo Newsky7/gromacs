@@ -98,6 +98,9 @@
 #include "gpuforcereduction.h"
 #include "mdgraph_gpu.h"
 
+#include "tracy/Tracy.hpp"
+
+
 ForceHelperBuffers::ForceHelperBuffers(bool haveDirectVirialContributions) :
     haveDirectVirialContributions_(haveDirectVirialContributions)
 {
@@ -666,6 +669,9 @@ void init_forcerec(FILE*                            fplog,
                    gmx::ArrayRef<const std::string> tabbfnm,
                    real                             print_force)
 {
+
+    ZoneScoped;
+
     /* The CMake default turns SIMD kernels on, but it might be turned off further down... */
     forcerec->use_simd_kernels = GMX_USE_SIMD_KERNELS;
 

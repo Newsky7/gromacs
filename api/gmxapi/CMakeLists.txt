@@ -53,6 +53,11 @@ set(GMXAPI_MINOR 4)
 set(GMXAPI_PATCH 0)
 set(GMXAPI_RELEASE ${GMXAPI_MAJOR}.${GMXAPI_MINOR}.${GMXAPI_PATCH})
 
+
+
+
+
+
 add_library(gmxapi)
 set_target_properties(gmxapi PROPERTIES
                       VERSION_MAJOR ${GMXAPI_MAJOR}

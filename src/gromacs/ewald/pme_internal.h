@@ -63,6 +63,9 @@
 
 #include "spline_vectors.h"
 
+#include "tracy/Tracy.hpp"
+
+
 //! A repeat of typedef from parallel_3dfft.h
 typedef struct gmx_parallel_3dfft* gmx_parallel_3dfft_t;
 
@@ -206,7 +209,7 @@ public:
     void setNumAtoms(int numAtoms);
 
     //! Returns the atom count
-    int numAtoms() const { return numAtoms_; }
+    int numAtoms() const { ZoneScoped; return numAtoms_; }
 
     //! Returns the number of atoms to send to each rank
     gmx::ArrayRef<int> sendCount()

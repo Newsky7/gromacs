@@ -47,6 +47,9 @@
 #include "pme_simd.h"
 #include "pme_spline_work.h"
 
+#include "tracy/Tracy.hpp"
+
+
 using namespace gmx; // TODO: Remove when this file is moved into gmx namespace
 
 /* Spline function. Goals: 1) Force compiler to instantiate function separately
@@ -300,6 +303,9 @@ void gather_f_bsplines(const gmx_pme_t*    pme,
                        const splinedata_t* spline,
                        real                scale)
 {
+
+    ZoneScoped;
+
     /* sum forces for local particles */
 
     const int order = pme->pme_order;

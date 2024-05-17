@@ -38,6 +38,8 @@
  * \author Teemu Murtola <teemu.murtola@gmail.com>
  * \ingroup module_commandline
  */
+#include "tracy/Tracy.hpp"
+
 #include "gmxpre.h"
 
 #include "cmdlinemodulemanager.h"
@@ -170,6 +172,7 @@ CommandLineCommonOptionsHolder::~CommandLineCommonOptionsHolder() {}
 
 void CommandLineCommonOptionsHolder::initOptions()
 {
+    ZoneScopedC(0x3CB371);
     options_.addOption(BooleanOption("h").store(&bHelp_).description("Print help and quit"));
     options_.addOption(BooleanOption("hidden").store(&bHidden_).hidden().description(
             "Show hidden options in help"));
@@ -332,8 +335,7 @@ CommandLineModuleManager::Impl::Impl(const char* binaryName, CommandLineProgramC
 void CommandLineModuleManager::Impl::addModule(CommandLineModulePointer module)
 {
 
-    // std::cout << " ## ------| src/gromacs/commandline/cmdlinemodulemager.cpp: CommandLineModuleManager::Impl::addModule()" << std::endl;
-
+    ZoneScopedC(0x008080);
     GMX_ASSERT(modules_.find(module->name()) == modules_.end(),
                "Attempted to register a duplicate module name");
     ensureHelpModuleExists();
@@ -345,8 +347,8 @@ void CommandLineModuleManager::Impl::addModule(CommandLineModulePointer module)
 void CommandLineModuleManager::Impl::ensureHelpModuleExists()
 {
 
-    // std::cout << " ## ----| src/gromacs/commandline/cmdlinemodulemanager.cpp: CommandLineModuleManager::Impl::ensureHelpModuleExists()" << std::endl;
-
+    ZoneScopedC(0xDDA0DD);
+    
     if (helpModule_ == nullptr)
     {
         helpModule_ = new CommandLineHelpModule(programContext_, binaryName_, modules_, moduleGroups_);
@@ -364,6 +366,9 @@ ICommandLineModule* CommandLineModuleManager::Impl::processCommonOptions(Command
                                                                          int*    argc,
                                                                          char*** argv)
 {
+
+    ZoneScopedC(0x2E8B57);
+
     // Check if we are directly invoking a certain module.
     ICommandLineModule* module = singleModule_;
 
@@ -441,6 +446,7 @@ ICommandLineModule* CommandLineModuleManager::Impl::processCommonOptions(Command
 
 void CommandLineModuleManager::Impl::printThanks(FILE* fp)
 {
+    ZoneScopedC(0x20B2AA);
     fprintf(fp, "\n%s\n\n", getCoolQuote().c_str());
 }
 
@@ -452,9 +458,8 @@ CommandLineModuleManager::CommandLineModuleManager(const char*                bi
                                                    CommandLineProgramContext* programContext) :
     impl_(new Impl(binaryName, programContext))
 {
-
-    std::cout << " ## ----| src/gromacs/commandline/cmdlinemodulemanager.cpp: CommandLineModuleManager Constructor" << std::endl;
-    std::cout << std::endl;
+    ZoneScoped;
+    ZoneText("CommandLineModuleManager constructor",strlen("CommandLineModuleManager constructor"));
 
 }
 
@@ -478,11 +483,13 @@ void CommandLineModuleManager::setSingleModule(ICommandLineModule* module)
 
 void CommandLineModuleManager::addModule(CommandLineModulePointer module)
 {
+    ZoneScoped;
     impl_->addModule(std::move(module));
 }
 
 void CommandLineModuleManager::addModuleCMain(const char* name, const char* shortDescription, CMainFunction mainFunction)
 {
+    ZoneScoped;
     CommandLineModulePointer module(
             new CMainCommandLineModule(name, shortDescription, mainFunction, nullptr));
     addModule(std::move(module));
@@ -500,6 +507,8 @@ void CommandLineModuleManager::addModuleCMainWithSettings(const char*          n
 
 CommandLineModuleGroup CommandLineModuleManager::addModuleGroup(const char* title)
 {
+    ZoneScoped;
+
     const char* const                 binaryName = impl_->binaryName_.c_str();
     CommandLineModuleGroupDataPointer group(
             new CommandLineModuleGroupData(impl_->modules_, binaryName, title));
@@ -509,21 +518,18 @@ CommandLineModuleGroup CommandLineModuleManager::addModuleGroup(const char* titl
 
 void CommandLineModuleManager::addHelpTopic(HelpTopicPointer topic)
 {
-
-    std::cout << " ## --| src/gromacs/commandline/cmdlinemodulemanager.cpp: CommandLineModulemanager::addHelpTopic()" << std::endl;
+    ZoneScopedC(0x0000CD);
 
     impl_->ensureHelpModuleExists();
     impl_->helpModule_->addTopic(std::move(topic), true);
 
-
-    std::cout << std::endl;
 
 }
 
 int CommandLineModuleManager::run(int argc, char* argv[])
 {
 
-    std::cout << " ## --| src/gromacs/commandline/cmdlinemodulemanager.cpp: CommandLineModuleManager::run()" << std::endl;
+    ZoneScopedC(0x8A2BE2);
 
     ICommandLineModule*            module;
     const bool                     bMain  = (gmx_node_rank() == 0);
@@ -596,15 +602,15 @@ int CommandLineModuleManager::run(int argc, char* argv[])
     {   
         std::cout << " ## Running module->run" << std::endl;
         std::cout << " ## NAME OF THE MODULE IS: " << module->name() << std::endl;
+        TracyMessageL("Starting module->run");
         rc = module->run(argc, argv);
+        TracyMessageL("module->run returned");
         std::cout << " ## module-> run finished" << std::endl;
     }
     if (!bQuiet)
     {
         impl_->printThanks(stderr);
     }
-
-    std::cout << std::endl;
 
     return rc;
 }

@@ -64,6 +64,9 @@
 #include "gromacs/utility/exceptions.h"
 #include "gromacs/utility/fatalerror.h"
 
+#include "tracy/Tracy.hpp"
+
+
 using gmx::ArrayRef;
 using gmx::RVec;
 
@@ -157,6 +160,8 @@ void CpuPpLongRangeNonbondeds::calculate(gmx_pme_t*                     pmedata,
                                          const gmx::StepWorkload&       stepWork,
                                          const DDBalanceRegionHandler&  ddBalanceRegionHandler)
 {
+
+    ZoneScoped;
 
     std::cout << " ############ void CpuPpLongRangeNonbondeds::calculate()" << std::endl;
 

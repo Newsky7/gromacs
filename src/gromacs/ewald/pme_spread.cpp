@@ -57,13 +57,15 @@
 #include "spline_vectors.h"
 
 #include <iostream>
+#include "tracy/Tracy.hpp"
+
 
 /* TODO consider split of pme-spline from this file */
 
 static void calc_interpolation_idx(const gmx_pme_t* pme, PmeAtomComm* atc, int start, int grid_index, int end, int thread)
 {
 
-    std::cout << "      -> void calc_interpolation_idx() CALLED (ewald/pme_spread.cpp)" << std::endl;
+    ZoneScopedC(0xC71585);
 
     int         i;
     int *       idxptr, tix, tiy, tiz;
@@ -180,12 +182,13 @@ static void calc_interpolation_idx(const gmx_pme_t* pme, PmeAtomComm* atc, int s
         }
         /* Now tpl_n contains the cummulative count again */
     }
-    std::cout << "      <- void calc_interpolation_idx() RETURNS (ewald/pme_spread.cpp)" << std::endl;
 
 }
 
 static void make_thread_local_ind(const PmeAtomComm* atc, int thread, splinedata_t* spline)
 {
+    ZoneScopedC(0xBA55D3);
+
     int n, t, i, start, end;
 
     /* Combine the indices made by each thread into one index */
@@ -280,6 +283,8 @@ static void make_bsplines(splinevec  theta,
                           const real coefficient[],
                           gmx_bool   bDoSplines)
 {
+    ZoneScoped;
+
     /* construct splines for local atoms */
     int   i, ii;
     real* xptr;
@@ -415,6 +420,8 @@ static void spread_coefficients_bsplines_thread(const pmegrid_t*       pmegrid,
 
 static void copy_local_grid(const gmx_pme_t* pme, const pmegrids_t* pmegrids, int grid_index, int thread, real* fftgrid)
 {
+    ZoneScopedC(0x483D8B);
+
     ivec  local_fft_ndata, local_fft_offset, local_fft_size;
     int   fft_my, fft_mz;
     int   nsy, nsz;
@@ -902,7 +909,8 @@ void spread_on_grid(const gmx_pme_t*  pme,
                     int               grid_index)
 {
 
-    std::cout << "  -> void spread_on_grid() CALLED (ewald/pme_spread.cpp)" << std::endl;
+
+    ZoneScoped;
 
 #ifdef PME_TIME_THREADS
     gmx_cycles_t  c1, c2, c3, ct1a, ct1b, ct1c;

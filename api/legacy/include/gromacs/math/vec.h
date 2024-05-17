@@ -108,6 +108,9 @@
 #include "gromacs/math/vectypes.h"
 #include "gromacs/utility/real.h"
 
+#include "tracy/Tracy.hpp"
+
+
 #include <iostream>
 
 static inline void rvec_add(const rvec a, const rvec b, rvec c)
@@ -265,7 +268,7 @@ static inline void ivec_sub(const ivec a, const ivec b, ivec c)
 
 static inline void copy_mat(const matrix a, matrix b)
 {
-    std::cout << "# api/legacy/include/gromacs/math/vec.h: void_copy_mat()" << std::endl;
+    ZoneScoped;
     copy_rvec(a[XX], b[XX]);
     copy_rvec(a[YY], b[YY]);
     copy_rvec(a[ZZ], b[ZZ]);
@@ -273,6 +276,7 @@ static inline void copy_mat(const matrix a, matrix b)
 
 static inline void svmul(real a, const rvec v1, rvec v2)
 {
+    ZoneScoped;
     v2[XX] = a * v1[XX];
     v2[YY] = a * v1[YY];
     v2[ZZ] = a * v1[ZZ];

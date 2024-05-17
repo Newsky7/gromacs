@@ -40,6 +40,9 @@
 
 #include <array>
 
+#include "tracy/Tracy.hpp"
+
+
 enum
 {
     eNR_NBKERNEL_VDW_VF,
@@ -185,6 +188,7 @@ void print_nrnb(FILE* out, t_nrnb* nrnb);
  */
 static inline void inc_nrnb(t_nrnb* nrnb, int index, int increment)
 {
+    ZoneScoped;
     nrnb->n[index] += increment;
 }
 

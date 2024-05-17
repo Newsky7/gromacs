@@ -58,6 +58,9 @@
 
 #include "buildinfo.h"
 
+#include "tracy/Tracy.hpp"
+
+
 namespace gmx
 {
 
@@ -98,6 +101,7 @@ DataFileFinder::~DataFileFinder() {}
 
 void DataFileFinder::setSearchPathFromEnv(const char* envVarName)
 {
+    ZoneScoped;
     if (!impl_)
     {
         impl_ = std::make_unique<Impl>();

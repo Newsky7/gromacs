@@ -58,6 +58,9 @@
 
 #include "pme_internal.h"
 
+#include "tracy/Tracy.hpp"
+
+
 //! Calculate the slab indices and store in \p atc, store counts in \p count
 static void pme_calc_pidx(int                            start,
                           int                            end,
@@ -403,6 +406,9 @@ static void dd_pmeredist_pos_coeffs(gmx_pme_t*                     pme,
 
 void dd_pmeredist_f(struct gmx_pme_t* pme, PmeAtomComm* atc, gmx::ArrayRef<gmx::RVec> f, gmx_bool bAddF)
 {
+
+    ZoneScoped;
+
     int nnodes_comm, local_pos, buf_pos, i;
 
     nnodes_comm = std::min(2 * atc->maxshift, atc->nslab - 1);
@@ -477,6 +483,9 @@ void do_redist_pos_coeffs(struct gmx_pme_t*              pme,
                           gmx::ArrayRef<const gmx::RVec> x,
                           gmx::ArrayRef<const real>      data)
 {
+
+    ZoneScoped;
+
     for (int d = pme->ndecompdim - 1; d >= 0; d--)
     {
         gmx::ArrayRef<const gmx::RVec> xRef;

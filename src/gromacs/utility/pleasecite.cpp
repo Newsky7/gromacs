@@ -43,6 +43,9 @@
 #include "gromacs/utility/smalloc.h"
 #include "gromacs/utility/stringutil.h"
 
+#include "tracy/Tracy.hpp"
+
+
 typedef struct
 {
     const char* key;
@@ -637,6 +640,7 @@ void writeSourceDoi(FILE* fp)
 
 void pleaseCiteGromacs(FILE* fplog)
 {
+    ZoneScoped;
     if (fplog == nullptr)
     {
         return;

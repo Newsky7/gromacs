@@ -31,6 +31,19 @@
 # To help us fund GROMACS development, we humbly ask that you cite
 # the research papers on the package. Check out https://www.gromacs.org.
 
+
+include(FetchContent)
+
+    FetchContent_Declare (
+        tracy
+        GIT_REPOSITORY https://github.com/wolfpld/tracy.git
+        GIT_TAG master
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
+        )
+
+FetchContent_MakeAvailable (tracy)
+
 file(GLOB MDRUN_SOURCES mdrun/*.cpp)
 # make an "object library" that we can re-use for multiple targets
 add_library(mdrun_objlib OBJECT ${MDRUN_SOURCES})
@@ -73,6 +86,11 @@ else()
                           libgromacs
                           ${GMX_COMMON_LIBRARIES}
                           ${GMX_EXE_LINKER_FLAGS})
+
+
+    target_link_libraries(gmx PUBLIC TracyClient)
+
+
     # Ensure that on Windows the application code page is set to utf8 mode so the behavior is
     # like Linux. For proper UTF8 console output, the user needs to enable utf8 (chcp 65001).
     if (MSVC)

@@ -156,11 +156,15 @@
 
 #include <iostream>
 
+#include "tracy/Tracy.hpp"
+
+
 using gmx::SimulationSignaller;
 
 void gmx::LegacySimulator::do_md()
 {
 
+    ZoneScoped;
     std::cout << " ## src/gromacs/mdrun/md.cpp: Running LegacySimulator::do_md()" << std::endl;
  
     // TODO Historically, the EM and MD "integrators" used different

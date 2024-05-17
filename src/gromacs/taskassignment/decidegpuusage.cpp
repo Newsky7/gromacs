@@ -74,6 +74,8 @@
 #include "gromacs/utility/message_string_collector.h"
 #include "gromacs/utility/stringutil.h"
 
+#include "tracy/Tracy.hpp"
+
 
 namespace gmx
 {
@@ -127,6 +129,9 @@ bool decideWhetherToUseGpusForNonbondedWithThreadMpi(const TaskTarget        non
                                                      const bool nonbondedOnGpuIsUseful,
                                                      const int  numRanksPerSimulation)
 {
+
+    ZoneScoped;
+
     // First, exclude all cases where we can't run NB on GPUs.
     if (nonbondedTarget == TaskTarget::Cpu || emulateGpuNonbonded == EmulateGpuNonbonded::Yes
         || !nonbondedOnGpuIsUseful || !buildSupportsNonbondedOnGpu)
@@ -215,6 +220,7 @@ bool decideWhetherToUseGpusForPmeWithThreadMpi(const bool              useGpuFor
                                                const int               numRanksPerSimulation,
                                                const int               numPmeRanksPerSimulation)
 {
+    ZoneScoped;
     // First, exclude all cases where we can't run PME on GPUs.
     if (!canUseGpusForPme(useGpuForNonbonded, pmeTarget, pmeFftTarget, inputrec, nullptr))
     {
@@ -481,6 +487,8 @@ bool decideWhetherToUseGpusForPme(const bool              useGpuForNonbonded,
 
 PmeRunMode determinePmeRunMode(const bool useGpuForPme, const TaskTarget& pmeFftTarget, const t_inputrec& inputrec)
 {
+    ZoneScoped;
+    
     if (!usingPme(inputrec.coulombtype) && !usingLJPme(inputrec.vdwtype))
     {
         return PmeRunMode::None;

@@ -203,6 +203,8 @@ static inline Matrix3x3 invertBoxMatrix(const Matrix3x3& src)
  */
 static inline void invertBoxMatrix(const matrix src, matrix dest)
 {
+    ZoneScoped;
+
     assertMatrixIsBoxMatrix(src);
 
     double tmp = src[XX][XX] * src[YY][YY] * src[ZZ][ZZ];

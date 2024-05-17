@@ -59,6 +59,7 @@
 #include "gromacs/trajectoryanalysis/cmdlinerunner.h"
 
 #include <iostream>
+#include "tracy/Tracy.hpp"
 
 namespace gmx
 {
@@ -81,6 +82,7 @@ namespace
 template<class ModuleInfo>
 void registerModule(CommandLineModuleManager* manager, CommandLineModuleGroup group)
 {
+    ZoneScoped;
     TrajectoryAnalysisCommandLineRunner::registerModule(
             manager, ModuleInfo::name, ModuleInfo::shortDescription, &ModuleInfo::create);
     group.addModule(ModuleInfo::name);
@@ -91,8 +93,7 @@ void registerModule(CommandLineModuleManager* manager, CommandLineModuleGroup gr
 //! \cond libapi
 void registerTrajectoryAnalysisModules(CommandLineModuleManager* manager)
 {
-
-    std::cout << " ## --| src/gromacs/trajectoryanalysis/modules.cpp: registerTrajectoryAnalysisModules()" << std::endl;
+    ZoneScoped;
 
     using namespace gmx::analysismodules;
     CommandLineModuleGroup group = manager->addModuleGroup("Trajectory analysis");
@@ -109,7 +110,7 @@ void registerTrajectoryAnalysisModules(CommandLineModuleManager* manager)
     registerModule<SelectInfo>(manager, group);
     registerModule<TrajectoryInfo>(manager, group);
 
-    std::cout << std::endl;
+
 }
 //! \endcond
 

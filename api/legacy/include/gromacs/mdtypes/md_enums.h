@@ -39,6 +39,11 @@
  * \inpublicapi
  * \ingroup module_mdtypes
  */
+
+
+#include "tracy/Tracy.hpp"
+
+
 #ifndef GMX_MDTYPES_MD_ENUMS_H
 #define GMX_MDTYPES_MD_ENUMS_H
 
@@ -304,6 +309,7 @@ static inline bool usingPme(const CoulombInteractionType& cit)
 //! Returns whether we use PME or full Ewald
 static inline bool usingPmeOrEwald(const CoulombInteractionType& cit)
 {
+    ZoneScoped;
     return (usingPme(cit) || cit == CoulombInteractionType::Ewald);
 };
 

@@ -53,6 +53,9 @@
 #include "gromacs/utility/exceptions.h"
 #include "gromacs/utility/stringutil.h"
 
+#include "tracy/Tracy.hpp"
+
+
 namespace gmx
 {
 
@@ -138,6 +141,8 @@ std::vector<int> parseUserGpuIdString(const std::string& gpuIdString)
 std::vector<int> makeListOfAvailableDevices(gmx::ArrayRef<const std::unique_ptr<DeviceInformation>> deviceInfoList,
                                             const std::string& devicesSelectedByUserString)
 {
+    ZoneScoped;
+    
     std::vector<int> devicesSelectedByUser = parseUserGpuIdString(devicesSelectedByUserString);
 
     if (devicesSelectedByUser.empty())
@@ -174,6 +179,7 @@ std::vector<int> makeListOfAvailableDevices(gmx::ArrayRef<const std::unique_ptr<
 
 std::vector<int> parseUserTaskAssignmentString(const std::string& gpuIdString)
 {
+    ZoneScoped;
     // Implement any additional constraints here that need to be imposed
 
     return parseGpuDeviceIdentifierList(gpuIdString);

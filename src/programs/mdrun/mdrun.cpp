@@ -71,12 +71,16 @@
 
 #include <iostream>
 
+#include "tracy/Tracy.hpp"
+
+
 namespace gmx
 {
 
 int gmx_mdrun(int argc, char* argv[])
 {
 
+    ZoneScopedC(0x9400D3);
 
     std::cout << " ## src/programs/mdrun/mdrun.cpp: gmx_mdrun()" << std::endl;
 
@@ -90,6 +94,9 @@ int gmx_mdrun(int argc, char* argv[])
 
 int gmx_mdrun(MPI_Comm communicator, const gmx_hw_info_t& hwinfo, int argc, char* argv[])
 {
+
+
+    ZoneScopedC(0xEE82EE);
 
     std::cout << " ## src/programs/mdrun/mdrun.cpp: gmx_mdrun_2()" << std::endl;
 

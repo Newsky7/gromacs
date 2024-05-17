@@ -39,9 +39,14 @@
 
 #include "gromacs/math/utilities.h"
 #include "gromacs/utility/real.h"
+#include "tracy/Tracy.hpp"
+
 
 real calc_ewaldcoeff_q(real rc, real rtol)
 {
+
+    ZoneScoped;
+
     real beta = 5, low, high;
     int  n, i = 0;
 
@@ -83,6 +88,8 @@ static real compute_lj_function(real beta, real rc)
 
 real calc_ewaldcoeff_lj(real rc, real rtol)
 {
+    ZoneScoped;
+    
     real beta = 5, low, high;
     int  n, i = 0;
 

@@ -57,6 +57,9 @@
 
 #include "pme_simd.h"
 
+#include "tracy/Tracy.hpp"
+
+
 /* GMX_CACHE_SEP should be a multiple of the SIMD and SIMD4 register size
  * to preserve alignment.
  */
@@ -372,6 +375,8 @@ static gmx_cycles_t omp_cyc_end(gmx_cycles_t c)
 int copy_fftgrid_to_pmegrid(struct gmx_pme_t* pme, const real* fftgrid, real* pmegrid, int grid_index, int nthread, int thread)
 {
 
+    ZoneScoped;
+
     std::cout << "      -- int copy_fftgrid_to_pmegrid (ewald/pme_grid.cpp)" << std::endl;
 
 
@@ -492,6 +497,8 @@ void wrap_periodic_pmegrid(const gmx_pme_t* pme, real* pmegrid)
 
 void unwrap_periodic_pmegrid(struct gmx_pme_t* pme, real* pmegrid)
 {
+    ZoneScoped;
+
     int nx, ny, nz, pny, pnz, ny_x, overlap, ix;
 
     nx = pme->nkx;

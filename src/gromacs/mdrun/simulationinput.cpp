@@ -44,6 +44,9 @@
 
 #include <iostream>
 
+#include "tracy/Tracy.hpp"
+
+
 namespace gmx
 {
 
@@ -53,6 +56,7 @@ void applyGlobalSimulationState(const SimulationInput&      simulationInput,
                                 t_inputrec*                 inputRecord,
                                 gmx_mtop_t*                 molecularTopology)
 {
+    ZoneScoped;
 
     std::cout << " ## src/gromacs/mdrun/simulationinput.cpp: applyGlobalSimulationState()" << std::endl;
 

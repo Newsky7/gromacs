@@ -57,6 +57,9 @@
 #include "gromacs/utility/programcontext.h"
 #include "gromacs/utility/stringutil.h"
 
+#include "tracy/Tracy.hpp"
+
+
 int gmx_omp_get_max_threads()
 {
 #if GMX_OPENMP
@@ -77,6 +80,7 @@ int gmx_omp_get_num_procs()
 
 int gmx_omp_get_thread_num()
 {
+    ZoneScoped;
 #if GMX_OPENMP
     return omp_get_thread_num();
 #else

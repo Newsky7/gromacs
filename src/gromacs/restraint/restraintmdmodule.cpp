@@ -43,6 +43,9 @@
 
 #include "restraintmdmodule_impl.h"
 
+#include "tracy/Tracy.hpp"
+
+
 namespace gmx
 {
 
@@ -188,6 +191,7 @@ void RestraintMDModule::initForceProviders(ForceProviders* forceProviders)
 std::unique_ptr<RestraintMDModule> RestraintMDModule::create(std::shared_ptr<IRestraintPotential> restraint,
                                                              const std::vector<int>& sites)
 {
+    ZoneScoped;
     auto implementation = std::make_unique<RestraintMDModuleImpl>(std::move(restraint), sites);
     auto newModule      = std::make_unique<RestraintMDModule>(std::move(implementation));
     return newModule;

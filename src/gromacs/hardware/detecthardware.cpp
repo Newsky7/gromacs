@@ -336,6 +336,8 @@ static void gmx_collect_hardware_mpi(const gmx::CpuInfo&             cpuInfo,
 std::unique_ptr<gmx_hw_info_t> gmx_detect_hardware(const PhysicalNodeCommunicator& physicalNodeComm,
                                                    MPI_Comm                        libraryCommWorld)
 {
+    ZoneScopedC(0x2F4F4F);
+
     // TODO: We should also do CPU hardware detection only once on each
     // physical node and broadcast it, instead of doing it on every MPI rank.
     auto hardwareInfo = std::make_unique<gmx_hw_info_t>(

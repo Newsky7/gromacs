@@ -54,6 +54,9 @@
 #include <utility>
 #include <vector>
 
+#include "tracy/Tracy.hpp"
+
+
 #if __has_include(<boost/stl_interfaces/iterator_interface.hpp>)
 #    include <boost/stl_interfaces/iterator_interface.hpp>
 #else // fallback for installed headers
@@ -253,7 +256,7 @@ public:
      */
     size_type size() const { return end_ - begin_; }
     //! Returns the signed size of the reference.
-    difference_type ssize() const { return size(); }
+    difference_type ssize() const { ZoneScoped; return size(); }
     //! Identical to size().
     size_type capacity() const { return end_ - begin_; }
     //! Whether the reference refers to no memory.

@@ -48,6 +48,9 @@
 
 #include <iostream>
 
+#include "tracy/Tracy.hpp"
+
+
 struct gmx_parallel_3dfft
 {
     fft5d_plan p1, p2;
@@ -173,7 +176,7 @@ int gmx_parallel_3dfft_execute(gmx_parallel_3dfft_t   pfft_setup,
                                gmx_wallcycle*         wcycle)
 {
 
-
+    ZoneScoped;
 
     std::cout << "## int gmx_parallel_3dfft_execute() CALLED" << std::endl;
 

@@ -69,6 +69,8 @@
 #include "gromacs/utility/programcontext.h"
 #include "gromacs/utility/smalloc.h"
 #include "gromacs/utility/stringutil.h"
+#include "tracy/Tracy.hpp"
+
 
 /* we keep a linked list of all files opened through pipes (i.e.
    compressed or .gzipped files. This way we can distinguish between them
@@ -115,6 +117,7 @@ const DataFileFinder& getLibraryFileFinder()
 
 void setLibraryFileFinder(const DataFileFinder* finder)
 {
+    ZoneScoped;
     g_libFileFinder = finder;
 }
 

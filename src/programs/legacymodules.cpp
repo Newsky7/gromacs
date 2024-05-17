@@ -72,6 +72,9 @@
 
 #include <iostream>
 
+#include "tracy/Tracy.hpp"
+
+
 namespace
 {
 
@@ -135,6 +138,7 @@ void registerModule(gmx::CommandLineModuleManager*               manager,
                     const char*                                  name,
                     const char*                                  shortDescription)
 {
+    ZoneScoped;
     manager->addModuleCMain(name, shortDescription, mainFunction);
 }
 
@@ -172,7 +176,8 @@ void registerObsoleteTool(gmx::CommandLineModuleManager* manager, const char* na
 void registerLegacyModules(gmx::CommandLineModuleManager* manager)
 {
 
-    std::cout << " ## --| src/programs/legacymodules.cpp: registerLegacyModules()" << std::endl;
+
+    ZoneScoped;
 
     registerModule(manager, &gmx_check, "check", "Check and compare files");
     gmx::ICommandLineOptionsModule::registerModuleFactory(
@@ -549,6 +554,5 @@ void registerLegacyModules(gmx::CommandLineModuleManager* manager)
                                        "Find a potential energy minimum and calculate the Hessian");
     }
 
-    std::cout << std::endl;
 
 }

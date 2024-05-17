@@ -48,6 +48,9 @@
 #include "gromacs/taskassignment/taskassignment.h"
 #include "gromacs/utility/arrayref.h"
 
+#include "tracy/Tracy.hpp"
+
+
 namespace gmx
 {
 
@@ -64,6 +67,8 @@ SimulationWorkload createSimulationWorkload(const t_inputrec& inputrec,
                                             bool       canUseDirectGpuComm,
                                             bool       useGpuPmeDecomposition)
 {
+        ZoneScoped;
+
     SimulationWorkload simulationWorkload;
     simulationWorkload.computeNonbonded = !disableNonbondedCalculation;
     simulationWorkload.computeNonbondedAtMtsLevel1 =

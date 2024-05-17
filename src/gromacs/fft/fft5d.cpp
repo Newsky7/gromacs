@@ -56,6 +56,9 @@
 #include "gromacs/utility/gmxmpi.h"
 #include "gromacs/utility/smalloc.h"
 
+#include "tracy/Tracy.hpp"
+
+
 #include <iostream>
 
 #ifdef NOGMX
@@ -1090,6 +1093,7 @@ static void print_localdata(const t_complex* lin, const char* txt, int s, fft5d_
 void fft5d_execute(fft5d_plan plan, int thread, fft5d_time times)
 {
 
+    ZoneScoped;
 
     std::cout << "### void fft5d_execute() CALLED" << std::endl;
 

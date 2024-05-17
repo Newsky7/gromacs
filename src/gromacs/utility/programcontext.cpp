@@ -44,6 +44,9 @@
 
 #include <cstddef>
 
+#include "tracy/Tracy.hpp"
+
+
 namespace gmx
 {
 
@@ -97,6 +100,7 @@ const IProgramContext& getProgramContext()
 
 void setProgramContext(const IProgramContext* programContext)
 {
+    ZoneScoped;
     g_programContext = programContext;
 }
 

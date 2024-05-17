@@ -51,6 +51,9 @@
 #include "pme_internal.h"
 #include "pme_output.h"
 
+#include "tracy/Tracy.hpp"
+
+
 #if GMX_SIMD_HAVE_REAL
 /* Turn on arbitrary width SIMD intrinsics for PME solve */
 #    define PME_SIMD_SOLVE
@@ -182,6 +185,8 @@ void pme_free_all_work(struct pme_solve_work_t** work, int nthread)
 
 void get_pme_ener_vir_q(pme_solve_work_t* work, int nthread, PmeOutput* output)
 {
+    ZoneScoped;
+
     GMX_ASSERT(output != nullptr, "Need valid output buffer");
     /* This function sums output over threads and should therefore
      * only be called after thread synchronization.
@@ -198,6 +203,9 @@ void get_pme_ener_vir_q(pme_solve_work_t* work, int nthread, PmeOutput* output)
 
 void get_pme_ener_vir_lj(pme_solve_work_t* work, int nthread, PmeOutput* output)
 {
+
+    ZoneScoped;
+
     GMX_ASSERT(output != nullptr, "Need valid output buffer");
     /* This function sums output over threads and should therefore
      * only be called after thread synchronization.
@@ -326,6 +334,8 @@ using PME_T = real;
 
 int solve_pme_yzx(const gmx_pme_t* pme, t_complex* grid, real vol, bool computeEnergyAndVirial, int nthread, int thread)
 {
+
+    ZoneScoped;
 
     std::cout << "  + int solve_pme_yzx() CALLED (ewald/pme_solve.cpp)" << std::endl;
 
@@ -596,6 +606,9 @@ int solve_pme_lj_yzx(const gmx_pme_t* pme,
                      int              nthread,
                      int              thread)
 {
+
+    ZoneScoped;
+
     /* do recip sum over local cells in grid */
     /* y major, z middle, x minor or continuous */
     int                      ig, gcount;

@@ -46,12 +46,15 @@
 #include "gromacs/mdtypes/md_enums.h"
 #include "gromacs/utility/exceptions.h"
 #include <iostream>
+#include "tracy/Tracy.hpp"
 
 namespace gmx
 {
 //! \brief Run the correct integrator function.
 void LegacySimulator::run()
 {
+
+    ZoneScoped;
 
     std::cout << " ## src/gromacs/mdrun/legacysimulator.cpp:  Running LegacySimulator::run()" << std::endl;
 

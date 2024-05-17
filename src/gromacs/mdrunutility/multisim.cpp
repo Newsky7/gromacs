@@ -53,6 +53,10 @@
 #include "gromacs/utility/logger.h"
 #include "gromacs/utility/smalloc.h"
 
+
+#include "tracy/Tracy.hpp"
+
+
 std::unique_ptr<gmx_multisim_t> buildMultiSimulation(MPI_Comm                         worldComm,
                                                      gmx::ArrayRef<const std::string> multidirs)
 {
@@ -339,7 +343,8 @@ void check_multi_int64(FILE* log, const gmx_multisim_t* ms, int64_t val, const c
 }
 
 bool findIsSimulationMainRank(const gmx_multisim_t* ms, MPI_Comm communicator)
-{
+{   
+    ZoneScoped;
     if (GMX_LIB_MPI)
     {
         // Ranks of multi-simulations know whether they are a main

@@ -50,6 +50,8 @@
 
 #include <iostream>
 
+#include "tracy/Tracy.hpp"
+
 #if GMX_LIB_MPI
 #    include "gromacs/utility/gmxmpi.h"
 #endif
@@ -67,8 +69,7 @@ int g_initializationCounter = 0;
 
 void init(int* argc, char*** argv) // NOLINT(readability-non-const-parameter)
 {
-
-    std::cout << " ## ----| src/gromacs/utility/init.cpp: init()" << std::endl;
+    ZoneScoped;
 
 #if GMX_LIB_MPI
     int isInitialized = 0, isFinalized = 0;
@@ -130,6 +131,8 @@ void init(int* argc, char*** argv) // NOLINT(readability-non-const-parameter)
 
 void finalize()
 {
+    ZoneScoped;
+    
 #if GMX_LIB_MPI
     GMX_RELEASE_ASSERT(0 < g_initializationCounter, "Excess attempt to finalize MPI");
     // Bump the counter to record this finalization event

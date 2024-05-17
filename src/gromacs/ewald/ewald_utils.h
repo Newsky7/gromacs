@@ -50,6 +50,9 @@
 #include "gromacs/utility/gmxassert.h"
 #include "gromacs/utility/real.h"
 
+//#include "tracy/Tracy.hpp"
+
+
 /*! \brief Computes the Ewald splitting coefficient for Coulomb
  *
  * Returns a value of beta that satisfies rtol > erfc(beta * rc)
@@ -121,6 +124,7 @@ public:
      */
     void scaleBox(const matrix box, matrix scaledBox) const
     {
+        ZoneScoped;
         GMX_ASSERT(box, "invalid source box pointer");
         GMX_ASSERT(scaledBox, "invalid target box pointer");
 

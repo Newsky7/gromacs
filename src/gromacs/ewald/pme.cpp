@@ -123,6 +123,9 @@
 #include "pme_spline_work.h"
 #include "pme_spread.h"
 
+#include "tracy/Tracy.hpp"
+
+
 bool pme_gpu_supports_build(std::string* error)
 {
     gmx::MessageStringCollector errorReasons;
@@ -592,6 +595,9 @@ gmx_pme_t* gmx_pme_init(const t_commrec*     cr,
                         const PmeGpuProgram* pmeGpuProgram,
                         const gmx::MDLogger& mdlog)
 {
+
+    ZoneScoped;
+
     int  use_threads, sum_use_threads, i;
     ivec ndata;
 
@@ -1099,6 +1105,10 @@ static void calc_initial_lb_coeffs(gmx::ArrayRef<real>       coefficient,
                                    gmx::ArrayRef<const real> local_c6,
                                    gmx::ArrayRef<const real> local_sigma)
 {
+
+
+    ZoneScoped;
+
     for (gmx::index i = 0; i < coefficient.ssize(); ++i)
     {
         real sigma4    = local_sigma[i];
@@ -1142,6 +1152,7 @@ int gmx_pme_do(struct gmx_pme_t*              pme,
                real*                          dvdlambda_lj,
                const gmx::StepWorkload&       stepWork)
 {
+    ZoneScoped;
     std::cout << "\n\n##################################"<<std::endl;
     std::cout << "# int gmx_pme_do() CALLED (ewald/pme.cpp) #" << std::endl;
     std::cout << "######################################\n\n"<<std::endl;
@@ -1231,9 +1242,10 @@ int gmx_pme_do(struct gmx_pme_t*              pme,
     std::cout << " pme->bFEP_lj: " << pme->bFEP_lj << std::endl;  
 
     std::cout << "\n\n## START OF LOOP (Iterating through force calculations). Max index is " << max_grid_index << std::endl;
+    TracyMessageL("START OF LOOP (Iterating through force calculations)");
+
     for (int grid_index = 0; grid_index < max_grid_index; ++grid_index)
     {
-
         std::cout << " ## LOOP: Grid index: " << grid_index << std::endl;
 
         /* Check if we should do calculations at this grid_index
@@ -1310,6 +1322,8 @@ int gmx_pme_do(struct gmx_pme_t*              pme,
         */
 
         /* Here we start a large thread parallel region */
+        TracyMessageL("START OF THREAD PARALLEL REGION");
+
 #pragma omp parallel num_threads(pme->nthread) private(thread)
         {
             try
@@ -1394,6 +1408,7 @@ int gmx_pme_do(struct gmx_pme_t*              pme,
             }
             GMX_CATCH_ALL_AND_EXIT_WITH_FATAL_ERROR
         }
+        TracyMessageL("END OF THREAD PARALLEL REGION");
         /* End of thread parallel section.
          * With MPI we have to synchronize here before gmx_sum_qgrid_dd.
          */
@@ -1455,6 +1470,8 @@ int gmx_pme_do(struct gmx_pme_t*              pme,
         }
         bFirst = FALSE;
     } /* of grid_index-loop */
+    TracyMessageL("END OF LOOP (Iterating through force calculations)");
+
 
     std::cout <<" ## end of LOOP" << std::endl;
 

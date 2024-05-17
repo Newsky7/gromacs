@@ -60,6 +60,9 @@
 
 #include "architecture.h"
 
+#include "tracy/Tracy.hpp"
+
+
 //! Constant used to help minimize preprocessed code
 static constexpr bool bGPUBinary = (GMX_GPU != 0);
 
@@ -389,6 +392,9 @@ void gmx_print_detected_hardware(FILE*                fplog,
                                  const gmx::MDLogger& mdlog,
                                  const gmx_hw_info_t* hwinfo)
 {
+
+    ZoneScoped;
+
     const gmx::CpuInfo& cpuInfo = *hwinfo->cpuInfo;
 
     if (fplog != nullptr)

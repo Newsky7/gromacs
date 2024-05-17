@@ -39,6 +39,21 @@
 # this INTERFACE target. Compiler and linker options (that do not need to
 # be propagated when linking to the `common` target) can be added directly
 # to the `common` target.
+
+
+include(FetchContent)
+
+    FetchContent_Declare (
+        tracy
+        GIT_REPOSITORY https://github.com/wolfpld/tracy.git
+        GIT_TAG master
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
+        )
+
+FetchContent_MakeAvailable (tracy)
+
+
 add_library(legacy_api INTERFACE)
 target_include_directories(legacy_api INTERFACE
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -46,6 +61,10 @@ target_include_directories(legacy_api INTERFACE
                            $<INSTALL_INTERFACE:include>)
 
 configure_file(version.h.cmakein include/gromacs/version.h)
+
+
+target_link_libraries(legacy_api INTERFACE TracyClient)
+
 
 # Allow an export target for legacy_api since it is a dependency of the
 # installable libgromacs target.
